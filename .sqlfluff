@@ -1,0 +1,67 @@
+[sqlfluff]
+templater = dbt
+dialect = ansi
+max_line_length = 120
+indent_unit = space
+large_file_skip_byte_limit = 0
+
+# Exclude files
+exclude_rules = ambiguous.column_count, structure.column_order
+
+[sqlfluff:indentation]
+tab_space_size = 4
+indent_unit = space
+
+[sqlfluff:layout:type:comma]
+spacing_before = touch
+line_position = trailing
+
+[sqlfluff:rules:capitalisation.keywords]
+capitalisation_policy = lower
+
+[sqlfluff:rules:capitalisation.identifiers]
+capitalisation_policy = lower
+
+[sqlfluff:rules:capitalisation.functions]
+capitalisation_policy = lower
+
+[sqlfluff:rules:capitalisation.literals]
+capitalisation_policy = lower
+
+[sqlfluff:rules:capitalisation.types]
+capitalisation_policy = lower
+
+[sqlfluff:rules:aliasing.table]
+aliasing = explicit
+
+[sqlfluff:rules:aliasing.column]
+aliasing = explicit
+
+[sqlfluff:rules:aliasing.length]
+min_alias_length = 1
+
+[sqlfluff:rules:convention.count_rows]
+prefer_count_1 = false
+prefer_count_0 = false
+
+[sqlfluff:rules:ambiguous.join]
+fully_qualify_join_types = inner
+
+[sqlfluff:rules:convention.terminator]
+multiline_newline = true
+require_final_semicolon = false
+
+[sqlfluff:rules:convention.blocked_words]
+blocked_words = None
+
+[sqlfluff:rules:references.consistent]
+single_table_references = unqualified
+
+[sqlfluff:templater:dbt]
+project_dir = ./
+profiles_dir = ./
+profile = orchestra_metadata
+target = dev
+
+[sqlfluff:templater:jinja]
+apply_dbt_builtins = true

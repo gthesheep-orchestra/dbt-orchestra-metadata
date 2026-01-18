@@ -1,0 +1,295 @@
+version: 2
+
+models:
+  - name: dim_pipelines
+    description: |
+      Pipeline dimension containing aggregated statistics for each pipeline.
+      Includes run counts, success rates, and timing metrics.
+    meta:
+      label: "Pipelines"
+      group: "Orchestra Metadata"
+    columns:
+      - name: pipeline_id
+        description: Unique identifier for the pipeline
+        data_tests:
+          - unique
+          - not_null
+        meta:
+          dimension:
+            type: string
+            label: "Pipeline ID"
+      - name: pipeline_name
+        description: Human-readable name of the pipeline
+        meta:
+          dimension:
+            type: string
+            label: "Pipeline Name"
+      - name: total_runs
+        description: Total number of completed pipeline runs
+        meta:
+          metrics:
+            total_pipeline_runs:
+              type: sum
+              label: "Total Pipeline Runs"
+      - name: successful_runs
+        description: Number of successful pipeline runs
+        meta:
+          metrics:
+            successful_pipeline_runs:
+              type: sum
+              label: "Successful Pipeline Runs"
+      - name: failed_runs
+        description: Number of failed pipeline runs
+        meta:
+          metrics:
+            failed_pipeline_runs:
+              type: sum
+              label: "Failed Pipeline Runs"
+      - name: warning_runs
+        description: Number of pipeline runs with warnings
+        meta:
+          metrics:
+            warning_pipeline_runs:
+              type: sum
+              label: "Warning Pipeline Runs"
+      - name: first_run_at
+        description: Timestamp of the first pipeline run
+        meta:
+          dimension:
+            type: timestamp
+            label: "First Run At"
+      - name: last_run_at
+        description: Timestamp of the most recent pipeline run
+        meta:
+          dimension:
+            type: timestamp
+            label: "Last Run At"
+      - name: avg_duration_seconds
+        description: Average duration of pipeline runs in seconds
+        meta:
+          metrics:
+            avg_pipeline_duration_seconds:
+              type: average
+              label: "Avg Pipeline Duration (sec)"
+      - name: max_duration_seconds
+        description: Maximum duration of any pipeline run in seconds
+      - name: min_duration_seconds
+        description: Minimum duration of any pipeline run in seconds
+      - name: success_rate_pct
+        description: Percentage of runs that succeeded
+        meta:
+          metrics:
+            pipeline_success_rate:
+              type: average
+              label: "Pipeline Success Rate %"
+              format: "percent"
+      - name: most_common_trigger
+        description: Most frequently used trigger for this pipeline
+        meta:
+          dimension:
+            type: string
+            label: "Most Common Trigger"
+      - name: most_common_branch
+        description: Most frequently used git branch
+        meta:
+          dimension:
+            type: string
+            label: "Most Common Branch"
+      - name: updated_at
+        description: Timestamp when this record was last updated
+
+  - name: dim_integrations
+    description: |
+      Integration dimension containing unique integrations and their job configurations.
+      Includes aggregated task and operation metrics per integration.
+    meta:
+      label: "Integrations"
+      group: "Orchestra Metadata"
+    columns:
+      - name: integration_key
+        description: Surrogate key for the integration-job combination
+        data_tests:
+          - unique
+          - not_null
+        meta:
+          dimension:
+            type: string
+            label: "Integration Key"
+            hidden: true
+      - name: integration
+        description: Integration type (e.g., dbt, Fivetran, Snowflake)
+        meta:
+          dimension:
+            type: string
+            label: "Integration"
+      - name: integration_job
+        description: Specific job within the integration
+        meta:
+          dimension:
+            type: string
+            label: "Integration Job"
+      - name: total_task_runs
+        description: Total number of task runs for this integration
+        meta:
+          metrics:
+            integration_task_runs:
+              type: sum
+              label: "Integration Task Runs"
+      - name: successful_task_runs
+        description: Number of successful task runs
+      - name: failed_task_runs
+        description: Number of failed task runs
+      - name: task_success_rate_pct
+        description: Success rate for tasks using this integration
+        meta:
+          metrics:
+            integration_task_success_rate:
+              type: average
+              label: "Integration Task Success Rate %"
+              format: "percent"
+      - name: avg_task_duration_seconds
+        description: Average task duration for this integration
+      - name: total_operations
+        description: Total number of operations for this integration
+        meta:
+          metrics:
+            integration_operations:
+              type: sum
+              label: "Integration Operations"
+      - name: total_rows_affected
+        description: Total rows affected by this integration
+        meta:
+          metrics:
+            integration_rows_affected:
+              type: sum
+              label: "Integration Rows Affected"
+              format: "0,0"
+      - name: avg_operation_duration_seconds
+        description: Average operation duration for this integration
+      - name: updated_at
+        description: Timestamp when this record was last updated
+
+  - name: dim_assets
+    description: |
+      Asset dimension containing data assets tracked by Orchestra.
+      Includes tables, views, dashboards, and their dependency relationships.
+    meta:
+      label: "Assets"
+      group: "Orchestra Metadata"
+    columns:
+      - name: asset_id
+        description: Unique identifier for the asset
+        data_tests:
+          - unique
+          - not_null
+        meta:
+          dimension:
+            type: string
+            label: "Asset ID"
+      - name: external_id
+        description: External identifier in the source system
+        meta:
+          dimension:
+            type: string
+            label: "External ID"
+      - name: asset_name
+        description: Name of the asset
+        meta:
+          dimension:
+            type: string
+            label: "Asset Name"
+      - name: asset_type
+        description: Type of asset (TABLE, VIEW, DASHBOARD, etc.)
+        data_tests:
+          - accepted_values:
+              values: ['DASHBOARD', 'DASHBOARD_VIEWS', 'DATASET', 'QUERIES', 'TABLE', 'UNKNOWN', 'VIEW', 'WORKBOOK']
+        meta:
+          dimension:
+            type: string
+            label: "Asset Type"
+      - name: integration
+        description: Integration where the asset resides
+        meta:
+          dimension:
+            type: string
+            label: "Integration"
+      - name: asset_status
+        description: Current status of the asset
+        meta:
+          dimension:
+            type: string
+            label: "Asset Status"
+      - name: upstream_dependency_count
+        description: Number of upstream dependencies
+        meta:
+          metrics:
+            total_upstream_dependencies:
+              type: sum
+              label: "Total Upstream Dependencies"
+      - name: downstream_dependency_count
+        description: Number of downstream dependencies
+        meta:
+          metrics:
+            total_downstream_dependencies:
+              type: sum
+              label: "Total Downstream Dependencies"
+      - name: upstream_dependencies
+        description: JSON array of upstream dependencies
+      - name: downstream_dependencies
+        description: JSON array of downstream dependencies
+      - name: row_count
+        description: Number of rows in the asset
+        meta:
+          metrics:
+            total_asset_rows:
+              type: sum
+              label: "Total Asset Rows"
+              format: "0,0"
+      - name: size_bytes
+        description: Size of the asset in bytes
+      - name: size_gb
+        description: Size of the asset in gigabytes
+        meta:
+          metrics:
+            total_asset_size_gb:
+              type: sum
+              label: "Total Asset Size (GB)"
+              round: 2
+      - name: is_database_object
+        description: Whether this is a table or view
+        meta:
+          dimension:
+            type: boolean
+            label: "Is Database Object"
+      - name: is_bi_asset
+        description: Whether this is a BI/dashboard asset
+        meta:
+          dimension:
+            type: boolean
+            label: "Is BI Asset"
+      - name: is_query_asset
+        description: Whether this is a query/dataset asset
+        meta:
+          dimension:
+            type: boolean
+            label: "Is Query Asset"
+      - name: is_source_asset
+        description: Whether this asset has no upstream dependencies
+        meta:
+          dimension:
+            type: boolean
+            label: "Is Source Asset"
+      - name: is_terminal_asset
+        description: Whether this asset has no downstream dependencies
+        meta:
+          dimension:
+            type: boolean
+            label: "Is Terminal Asset"
+      - name: created_at_utc
+        description: Timestamp when created in the integration
+        meta:
+          dimension:
+            type: timestamp
+            label: "Created At"
+      - name: updated_at
+        description: Timestamp when this record was last updated

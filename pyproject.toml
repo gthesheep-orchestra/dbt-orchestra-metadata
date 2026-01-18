@@ -1,0 +1,49 @@
+[project]
+name = "dbt-orchestra-metadata"
+version = "1.0.0"
+description = "dbt project for transforming Orchestra metadata API data"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+
+dependencies = [
+    "dbt-core>=1.7.0,<2.0.0",
+    "sqlfluff>=3.0.0",
+    "sqlfluff-templater-dbt>=3.0.0",
+]
+
+[project.optional-dependencies]
+# Warehouse adapters - install the one you need
+snowflake = ["dbt-snowflake>=1.7.0,<2.0.0"]
+bigquery = ["dbt-bigquery>=1.7.0,<2.0.0"]
+postgres = ["dbt-postgres>=1.7.0,<2.0.0"]
+redshift = ["dbt-redshift>=1.7.0,<2.0.0"]
+duckdb = ["dbt-duckdb>=1.7.0,<2.0.0"]
+databricks = ["dbt-databricks>=1.7.0,<2.0.0"]
+
+# Development dependencies
+dev = [
+    "pre-commit>=3.0.0",
+    "sqlfluff>=3.0.0",
+    "sqlfluff-templater-dbt>=3.0.0",
+]
+
+# CI dependencies (lightweight for linting only)
+ci = [
+    "sqlfluff>=3.0.0",
+]
+
+[tool.uv]
+dev-dependencies = [
+    "pre-commit>=3.0.0",
+    "sqlfluff>=3.0.0",
+    "sqlfluff-templater-dbt>=3.0.0",
+]
+
+[tool.sqlfluff.core]
+templater = "dbt"
+dialect = "ansi"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

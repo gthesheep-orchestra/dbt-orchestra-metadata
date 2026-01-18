@@ -1,0 +1,37 @@
+name: 'orchestra_metadata'
+version: '1.0.0'
+config-version: 2
+
+profile: 'orchestra_metadata'
+
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+vars:
+  # Schema where dlt loads Orchestra data
+  orchestra_source_schema: 'orchestra'
+  # Identifier prefix for dlt-loaded tables
+  orchestra_source_database: null  # Set to your database if using multi-db
+
+models:
+  orchestra_metadata:
+    +materialized: view
+    staging:
+      +materialized: view
+      +schema: staging
+    marts:
+      +materialized: table
+      +schema: marts
+      dimensions:
+        +materialized: table
+      facts:
+        +materialized: incremental
+        +on_schema_change: append_new_columns

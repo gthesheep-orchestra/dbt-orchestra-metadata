@@ -1,0 +1,56 @@
+# Copy this file to ~/.dbt/profiles.yml or to this directory as profiles.yml
+# Then fill in your warehouse connection details
+
+orchestra_metadata:
+  target: dev
+  outputs:
+    dev:
+      # Snowflake example
+      type: snowflake
+      account: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
+      user: "{{ env_var('SNOWFLAKE_USER') }}"
+      password: "{{ env_var('SNOWFLAKE_PASSWORD') }}"
+      role: "{{ env_var('SNOWFLAKE_ROLE', 'TRANSFORMER') }}"
+      database: "{{ env_var('SNOWFLAKE_DATABASE', 'ANALYTICS') }}"
+      warehouse: "{{ env_var('SNOWFLAKE_WAREHOUSE', 'TRANSFORMING') }}"
+      schema: orchestra_staging
+      threads: 4
+
+    # BigQuery example (uncomment to use)
+    # dev:
+    #   type: bigquery
+    #   method: oauth
+    #   project: "{{ env_var('GCP_PROJECT') }}"
+    #   dataset: orchestra_staging
+    #   threads: 4
+    #   timeout_seconds: 300
+    #   location: US
+
+    # PostgreSQL example (uncomment to use)
+    # dev:
+    #   type: postgres
+    #   host: "{{ env_var('POSTGRES_HOST', 'localhost') }}"
+    #   user: "{{ env_var('POSTGRES_USER') }}"
+    #   password: "{{ env_var('POSTGRES_PASSWORD') }}"
+    #   port: 5432
+    #   dbname: "{{ env_var('POSTGRES_DATABASE', 'analytics') }}"
+    #   schema: orchestra_staging
+    #   threads: 4
+
+    # DuckDB example (uncomment to use)
+    # dev:
+    #   type: duckdb
+    #   path: "{{ env_var('DUCKDB_PATH', 'orchestra.duckdb') }}"
+    #   threads: 4
+
+    prod:
+      # Copy your dev configuration and adjust schema names
+      type: snowflake
+      account: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
+      user: "{{ env_var('SNOWFLAKE_USER') }}"
+      password: "{{ env_var('SNOWFLAKE_PASSWORD') }}"
+      role: "{{ env_var('SNOWFLAKE_ROLE', 'TRANSFORMER') }}"
+      database: "{{ env_var('SNOWFLAKE_DATABASE', 'ANALYTICS') }}"
+      warehouse: "{{ env_var('SNOWFLAKE_WAREHOUSE', 'TRANSFORMING') }}"
+      schema: orchestra_prod
+      threads: 8

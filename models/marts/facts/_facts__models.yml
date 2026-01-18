@@ -1,0 +1,775 @@
+version: 2
+
+models:
+  - name: fct_pipeline_runs
+    description: |
+      Fact table containing pipeline run events with enriched task statistics.
+      Incrementally loaded based on updated_at_utc timestamp.
+      Grain: One row per pipeline run.
+    meta:
+      label: "Pipeline Runs"
+      group: "Orchestra Metadata"
+      joins:
+        - join: dim_pipelines
+          sql_on: "${fct_pipeline_runs.pipeline_id} = ${dim_pipelines.pipeline_id}"
+    columns:
+      - name: pipeline_run_id
+        description: Unique identifier for the pipeline run
+        data_tests:
+          - unique
+          - not_null
+        meta:
+          dimension:
+            type: string
+            label: "Pipeline Run ID"
+            hidden: true
+      - name: pipeline_id
+        description: Identifier of the pipeline definition
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('dim_pipelines')
+              field: pipeline_id
+              config:
+                severity: warn
+        meta:
+          dimension:
+            type: string
+            label: "Pipeline ID"
+      - name: pipeline_name
+        description: Human-readable name of the pipeline
+        meta:
+          dimension:
+            type: string
+            label: "Pipeline Name"
+      - name: run_status
+        description: Current status of the pipeline run
+        data_tests:
+          - accepted_values:
+              values: ['CREATED', 'RUNNING', 'SUCCEEDED', 'WARNING', 'FAILED', 'CANCELLING', 'CANCELLED']
+        meta:
+          dimension:
+            type: string
+            label: "Run Status"
+      - name: triggered_by
+        description: User or system that initiated the run
+        meta:
+          dimension:
+            type: string
+            label: "Triggered By"
+      - name: git_branch
+        description: Git branch the pipeline ran from
+        meta:
+          dimension:
+            type: string
+            label: "Git Branch"
+      - name: git_commit_sha
+        description: Git commit SHA
+        meta:
+          dimension:
+            type: string
+            label: "Git Commit"
+      - name: created_at_utc
+        description: Timestamp when the pipeline run was created
+        data_tests:
+          - not_null
+        meta:
+          dimension:
+            type: timestamp
+            label: "Created At"
+            time_intervals: ['DAY', 'WEEK', 'MONTH', 'QUARTER', 'YEAR']
+      - name: started_at_utc
+        description: Timestamp when execution started
+        meta:
+          dimension:
+            type: timestamp
+            label: "Started At"
+      - name: updated_at_utc
+        description: Timestamp of last status update
+        meta:
+          dimension:
+            type: timestamp
+            label: "Updated At"
+      - name: completed_at_utc
+        description: Timestamp when execution completed
+        meta:
+          dimension:
+            type: timestamp
+            label: "Completed At"
+      - name: created_date
+        description: Date when the pipeline run was created
+        meta:
+          dimension:
+            type: date
+            label: "Created Date"
+      - name: started_date
+        description: Date when execution started
+        meta:
+          dimension:
+            type: date
+            label: "Started Date"
+      - name: completed_date
+        description: Date when execution completed
+        meta:
+          dimension:
+            type: date
+            label: "Completed Date"
+      - name: duration_seconds
+        description: Total execution duration in seconds
+        meta:
+          metrics:
+            total_pipeline_duration_seconds:
+              type: sum
+              label: "Total Pipeline Duration (sec)"
+            avg_pipeline_duration_seconds:
+              type: average
+              label: "Avg Pipeline Duration (sec)"
+              round: 1
+            max_pipeline_duration_seconds:
+              type: max
+              label: "Max Pipeline Duration (sec)"
+      - name: duration_minutes
+        description: Total execution duration in minutes
+        meta:
+          metrics:
+            avg_pipeline_duration_minutes:
+              type: average
+              label: "Avg Pipeline Duration (min)"
+              round: 2
+      - name: is_successful
+        description: Whether the run completed successfully
+        meta:
+          dimension:
+            type: boolean
+            label: "Is Successful"
+          metrics:
+            successful_runs:
+              type: sum
+              label: "Successful Runs"
+      - name: is_failed
+        description: Whether the run failed
+        meta:
+          dimension:
+            type: boolean
+            label: "Is Failed"
+          metrics:
+            failed_runs:
+              type: sum
+              label: "Failed Runs"
+      - name: is_in_progress
+        description: Whether the run is still executing
+        meta:
+          dimension:
+            type: boolean
+            label: "Is In Progress"
+      - name: is_cancelled
+        description: Whether the run was cancelled
+        meta:
+          dimension:
+            type: boolean
+            label: "Is Cancelled"
+      - name: has_warning
+        description: Whether the run completed with warnings
+        meta:
+          dimension:
+            type: boolean
+            label: "Has Warning"
+          metrics:
+            warning_runs:
+              type: sum
+              label: "Warning Runs"
+      - name: total_tasks
+        description: Total number of tasks in the pipeline run
+        meta:
+          metrics:
+            sum_total_tasks:
+              type: sum
+              label: "Total Tasks"
+            avg_tasks_per_run:
+              type: average
+              label: "Avg Tasks per Run"
+              round: 1
+      - name: successful_tasks
+        description: Number of successful tasks
+        meta:
+          metrics:
+            sum_successful_tasks:
+              type: sum
+              label: "Successful Tasks"
+      - name: failed_tasks
+        description: Number of failed tasks
+        meta:
+          metrics:
+            sum_failed_tasks:
+              type: sum
+              label: "Failed Tasks"
+      - name: skipped_tasks
+        description: Number of skipped tasks
+      - name: warning_tasks
+        description: Number of tasks with warnings
+      - name: total_task_duration_seconds
+        description: Sum of all task durations in seconds
+        meta:
+          metrics:
+            sum_task_duration_seconds:
+              type: sum
+              label: "Total Task Duration (sec)"
+      - name: unique_integrations
+        description: Number of unique integrations used
+        meta:
+          metrics:
+            avg_integrations_per_run:
+              type: average
+              label: "Avg Integrations per Run"
+              round: 1
+      - name: task_success_rate_pct
+        description: Percentage of tasks that succeeded
+        meta:
+          metrics:
+            avg_task_success_rate:
+              type: average
+              label: "Avg Task Success Rate %"
+              format: "percent"
+      - name: _dlt_load_id
+        description: dlt ingestion batch identifier
+      - name: _dlt_id
+        description: dlt unique row identifier
+
+  - name: fct_task_runs
+    description: |
+      Fact table containing task run events with enriched operation statistics.
+      Incrementally loaded based on updated_at_utc timestamp.
+      Grain: One row per task run.
+    meta:
+      label: "Task Runs"
+      group: "Orchestra Metadata"
+      joins:
+        - join: dim_integrations
+          sql_on: "${fct_task_runs.integration_key} = ${dim_integrations.integration_key}"
+        - join: fct_pipeline_runs
+          sql_on: "${fct_task_runs.pipeline_run_id} = ${fct_pipeline_runs.pipeline_run_id}"
+    columns:
+      - name: task_run_id
+        description: Unique identifier for the task run
+        data_tests:
+          - unique
+          - not_null
+        meta:
+          dimension:
+            type: string
+            label: "Task Run ID"
+            hidden: true
+      - name: pipeline_run_id
+        description: ID of the parent pipeline run
+        data_tests:
+          - not_null
+        meta:
+          dimension:
+            type: string
+            label: "Pipeline Run ID"
+      - name: pipeline_id
+        description: ID of the pipeline definition
+        meta:
+          dimension:
+            type: string
+            label: "Pipeline ID"
+      - name: integration_key
+        description: Surrogate key for joining to dim_integrations
+        meta:
+          dimension:
+            type: string
+            hidden: true
+      - name: task_name
+        description: Name of the task
+        meta:
+          dimension:
+            type: string
+            label: "Task Name"
+      - name: task_status
+        description: Current status of the task run
+        data_tests:
+          - accepted_values:
+              values: ['CREATED', 'SKIPPED', 'QUEUED', 'RUNNING', 'SUCCEEDED', 'WARNING', 'FAILED', 'CANCELLING', 'CANCELLED']
+        meta:
+          dimension:
+            type: string
+            label: "Task Status"
+      - name: integration
+        description: Integration type
+        meta:
+          dimension:
+            type: string
+            label: "Integration"
+      - name: integration_job
+        description: Specific job within the integration
+        meta:
+          dimension:
+            type: string
+            label: "Integration Job"
+      - name: status_message
+        description: Status or error message
+        meta:
+          dimension:
+            type: string
+            label: "Status Message"
+      - name: external_status
+        description: Status from the external integration
+        meta:
+          dimension:
+            type: string
+            label: "External Status"
+      - name: pipeline_name
+        description: Name of the parent pipeline
+        meta:
+          dimension:
+            type: string
+            label: "Pipeline Name"
+      - name: git_branch
+        description: Git branch from the pipeline run
+        meta:
+          dimension:
+            type: string
+            label: "Git Branch"
+      - name: git_commit_sha
+        description: Git commit SHA from the pipeline run
+        meta:
+          dimension:
+            type: string
+            label: "Git Commit"
+      - name: created_at_utc
+        description: Timestamp when the task run was created
+        data_tests:
+          - not_null
+        meta:
+          dimension:
+            type: timestamp
+            label: "Created At"
+            time_intervals: ['DAY', 'WEEK', 'MONTH', 'QUARTER', 'YEAR']
+      - name: started_at_utc
+        description: Timestamp when execution started
+        meta:
+          dimension:
+            type: timestamp
+            label: "Started At"
+      - name: updated_at_utc
+        description: Timestamp of last status update
+        meta:
+          dimension:
+            type: timestamp
+            label: "Updated At"
+      - name: completed_at_utc
+        description: Timestamp when execution completed
+        meta:
+          dimension:
+            type: timestamp
+            label: "Completed At"
+      - name: created_date
+        description: Date when the task run was created
+        meta:
+          dimension:
+            type: date
+            label: "Created Date"
+      - name: started_date
+        description: Date when execution started
+        meta:
+          dimension:
+            type: date
+            label: "Started Date"
+      - name: completed_date
+        description: Date when execution completed
+        meta:
+          dimension:
+            type: date
+            label: "Completed Date"
+      - name: duration_seconds
+        description: Total execution duration in seconds
+        meta:
+          metrics:
+            total_task_duration_seconds:
+              type: sum
+              label: "Total Task Duration (sec)"
+            avg_task_duration_seconds:
+              type: average
+              label: "Avg Task Duration (sec)"
+              round: 1
+            max_task_duration_seconds:
+              type: max
+              label: "Max Task Duration (sec)"
+      - name: duration_minutes
+        description: Total execution duration in minutes
+        meta:
+          metrics:
+            avg_task_duration_minutes:
+              type: average
+              label: "Avg Task Duration (min)"
+              round: 2
+      - name: is_successful
+        description: Whether the task completed successfully
+        meta:
+          dimension:
+            type: boolean
+            label: "Is Successful"
+          metrics:
+            successful_task_runs:
+              type: sum
+              label: "Successful Task Runs"
+      - name: is_failed
+        description: Whether the task failed
+        meta:
+          dimension:
+            type: boolean
+            label: "Is Failed"
+          metrics:
+            failed_task_runs:
+              type: sum
+              label: "Failed Task Runs"
+      - name: is_in_progress
+        description: Whether the task is still executing
+        meta:
+          dimension:
+            type: boolean
+            label: "Is In Progress"
+      - name: is_cancelled
+        description: Whether the task was cancelled
+        meta:
+          dimension:
+            type: boolean
+            label: "Is Cancelled"
+      - name: is_skipped
+        description: Whether the task was skipped
+        meta:
+          dimension:
+            type: boolean
+            label: "Is Skipped"
+          metrics:
+            skipped_task_runs:
+              type: sum
+              label: "Skipped Task Runs"
+      - name: has_warning
+        description: Whether the task completed with warnings
+        meta:
+          dimension:
+            type: boolean
+            label: "Has Warning"
+      - name: total_operations
+        description: Total number of operations in the task run
+        meta:
+          metrics:
+            sum_total_operations:
+              type: sum
+              label: "Total Operations"
+            avg_operations_per_task:
+              type: average
+              label: "Avg Operations per Task"
+              round: 1
+      - name: successful_operations
+        description: Number of successful operations
+      - name: failed_operations
+        description: Number of failed operations
+      - name: skipped_operations
+        description: Number of skipped operations
+      - name: total_rows_affected
+        description: Total rows affected by all operations
+        meta:
+          metrics:
+            sum_rows_affected:
+              type: sum
+              label: "Total Rows Affected"
+              format: "0,0"
+            avg_rows_per_task:
+              type: average
+              label: "Avg Rows per Task"
+              format: "0,0"
+      - name: total_operation_duration_seconds
+        description: Sum of all operation durations
+        meta:
+          metrics:
+            sum_operation_duration_seconds:
+              type: sum
+              label: "Total Operation Duration (sec)"
+      - name: ingestion_operations
+        description: Number of ingestion operations
+        meta:
+          metrics:
+            sum_ingestion_operations:
+              type: sum
+              label: "Ingestion Operations"
+      - name: transformation_operations
+        description: Number of transformation operations
+        meta:
+          metrics:
+            sum_transformation_operations:
+              type: sum
+              label: "Transformation Operations"
+      - name: testing_operations
+        description: Number of testing operations
+        meta:
+          metrics:
+            sum_testing_operations:
+              type: sum
+              label: "Testing Operations"
+      - name: deployment_operations
+        description: Number of deployment operations
+        meta:
+          metrics:
+            sum_deployment_operations:
+              type: sum
+              label: "Deployment Operations"
+      - name: operation_success_rate_pct
+        description: Percentage of operations that succeeded
+        meta:
+          metrics:
+            avg_operation_success_rate:
+              type: average
+              label: "Avg Operation Success Rate %"
+              format: "percent"
+      - name: _dlt_load_id
+        description: dlt ingestion batch identifier
+      - name: _dlt_id
+        description: dlt unique row identifier
+
+  - name: fct_operations
+    description: |
+      Fact table containing individual operation events with enriched context.
+      Incrementally loaded based on created_at_utc timestamp.
+      Grain: One row per operation.
+    meta:
+      label: "Operations"
+      group: "Orchestra Metadata"
+      joins:
+        - join: dim_integrations
+          sql_on: "${fct_operations.integration_key} = ${dim_integrations.integration_key}"
+        - join: fct_task_runs
+          sql_on: "${fct_operations.task_run_id} = ${fct_task_runs.task_run_id}"
+    columns:
+      - name: operation_id
+        description: Unique identifier for the operation
+        data_tests:
+          - unique
+          - not_null
+        meta:
+          dimension:
+            type: string
+            label: "Operation ID"
+            hidden: true
+      - name: task_run_id
+        description: ID of the parent task run
+        meta:
+          dimension:
+            type: string
+            label: "Task Run ID"
+      - name: pipeline_run_id
+        description: ID of the parent pipeline run
+        meta:
+          dimension:
+            type: string
+            label: "Pipeline Run ID"
+      - name: pipeline_id
+        description: ID of the pipeline definition
+        meta:
+          dimension:
+            type: string
+            label: "Pipeline ID"
+      - name: external_id
+        description: External identifier from the integration
+        meta:
+          dimension:
+            type: string
+            label: "External ID"
+      - name: integration_key
+        description: Surrogate key for joining to dim_integrations
+        meta:
+          dimension:
+            type: string
+            hidden: true
+      - name: operation_name
+        description: Name of the operation
+        meta:
+          dimension:
+            type: string
+            label: "Operation Name"
+      - name: operation_status
+        description: Status of the operation
+        data_tests:
+          - accepted_values:
+              values: ['SUCCEEDED', 'FAILED', 'SKIPPED', 'UNKNOWN', 'WARNING', 'CANCELLED']
+        meta:
+          dimension:
+            type: string
+            label: "Operation Status"
+      - name: operation_type
+        description: Type of operation performed
+        data_tests:
+          - accepted_values:
+              values: ['AGGREGATION', 'ANALYSIS', 'DEPLOY', 'INGESTION', 'ITERATOR', 'MATERIALISATION', 'OPERATION', 'QUERY', 'REVERSE_ETL', 'SEED', 'SNAPSHOT', 'SOURCE', 'TEST', 'TEST_GROUP', 'TRIGGER', 'UNKNOWN']
+        meta:
+          dimension:
+            type: string
+            label: "Operation Type"
+      - name: integration
+        description: Integration that performed the operation
+        meta:
+          dimension:
+            type: string
+            label: "Integration"
+      - name: integration_job
+        description: Specific job within the integration
+        meta:
+          dimension:
+            type: string
+            label: "Integration Job"
+      - name: task_name
+        description: Name of the parent task
+        meta:
+          dimension:
+            type: string
+            label: "Task Name"
+      - name: pipeline_name
+        description: Name of the parent pipeline
+        meta:
+          dimension:
+            type: string
+            label: "Pipeline Name"
+      - name: git_branch
+        description: Git branch from the pipeline run
+        meta:
+          dimension:
+            type: string
+            label: "Git Branch"
+      - name: git_commit_sha
+        description: Git commit SHA from the pipeline run
+        meta:
+          dimension:
+            type: string
+            label: "Git Commit"
+      - name: created_at_utc
+        description: Timestamp when the operation was created
+        data_tests:
+          - not_null
+        meta:
+          dimension:
+            type: timestamp
+            label: "Created At"
+            time_intervals: ['DAY', 'WEEK', 'MONTH', 'QUARTER', 'YEAR']
+      - name: created_date
+        description: Date when the operation was created
+        meta:
+          dimension:
+            type: date
+            label: "Created Date"
+      - name: rows_affected
+        description: Number of rows affected by the operation
+        meta:
+          metrics:
+            total_rows_affected:
+              type: sum
+              label: "Total Rows Affected"
+              format: "0,0"
+            avg_rows_affected:
+              type: average
+              label: "Avg Rows Affected"
+              format: "0,0"
+            max_rows_affected:
+              type: max
+              label: "Max Rows Affected"
+              format: "0,0"
+      - name: duration_seconds
+        description: Operation duration in seconds
+        meta:
+          metrics:
+            total_operation_duration_seconds:
+              type: sum
+              label: "Total Operation Duration (sec)"
+            avg_operation_duration_seconds:
+              type: average
+              label: "Avg Operation Duration (sec)"
+              round: 2
+            max_operation_duration_seconds:
+              type: max
+              label: "Max Operation Duration (sec)"
+      - name: duration_minutes
+        description: Operation duration in minutes
+        meta:
+          metrics:
+            avg_operation_duration_minutes:
+              type: average
+              label: "Avg Operation Duration (min)"
+              round: 2
+      - name: rows_per_second
+        description: Throughput in rows per second
+        meta:
+          metrics:
+            avg_rows_per_second:
+              type: average
+              label: "Avg Rows per Second"
+              round: 0
+            max_rows_per_second:
+              type: max
+              label: "Max Rows per Second"
+              round: 0
+      - name: is_successful
+        description: Whether the operation succeeded
+        meta:
+          dimension:
+            type: boolean
+            label: "Is Successful"
+          metrics:
+            successful_operations:
+              type: sum
+              label: "Successful Operations"
+      - name: is_failed
+        description: Whether the operation failed
+        meta:
+          dimension:
+            type: boolean
+            label: "Is Failed"
+          metrics:
+            failed_operations:
+              type: sum
+              label: "Failed Operations"
+      - name: is_skipped
+        description: Whether the operation was skipped
+        meta:
+          dimension:
+            type: boolean
+            label: "Is Skipped"
+      - name: has_warning
+        description: Whether the operation had warnings
+        meta:
+          dimension:
+            type: boolean
+            label: "Has Warning"
+      - name: is_cancelled
+        description: Whether the operation was cancelled
+        meta:
+          dimension:
+            type: boolean
+            label: "Is Cancelled"
+      - name: is_ingestion_operation
+        description: Whether this is a data ingestion operation
+        meta:
+          dimension:
+            type: boolean
+            label: "Is Ingestion"
+      - name: is_transformation_operation
+        description: Whether this is a transformation operation
+        meta:
+          dimension:
+            type: boolean
+            label: "Is Transformation"
+      - name: is_testing_operation
+        description: Whether this is a testing operation
+        meta:
+          dimension:
+            type: boolean
+            label: "Is Testing"
+      - name: is_deployment_operation
+        description: Whether this is a deployment operation
+        meta:
+          dimension:
+            type: boolean
+            label: "Is Deployment"
+      - name: _dlt_load_id
+        description: dlt ingestion batch identifier
+      - name: _dlt_id
+        description: dlt unique row identifier
