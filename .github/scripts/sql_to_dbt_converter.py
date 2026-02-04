@@ -9,6 +9,7 @@ import os
 import re
 import json
 import shutil
+import time
 from pathlib import Path
 from typing import List, Dict, Tuple
 from openai import OpenAI
@@ -197,31 +198,54 @@ Important:
 - Add clear comments for complex logic
 """
         
-        try:
-            response = self.client.chat.completions.create(
-                model="gpt-4o",  # GitHub Models provides GPT-4o
-                messages=[
-                    {"role": "system", "content": "You are an expert data engineer who converts SQL queries to dbt models."},
-                    {"role": "user", "content": prompt}
-                ],
-                temperature=0.3,
-                max_tokens=2000
-            )
-            
-            # Extract JSON from response
-            response_text = response.choices[0].message.content
-            
-            # Try to parse JSON from the response
-            json_match = re.search(r'\{.*\}', response_text, re.DOTALL)
-            if json_match:
-                return json.loads(json_match.group(0))
-            else:
-                print(f"Could not parse JSON from GPT-4 response for {query_info['file']}")
-                return None
+        # Retry logic with exponential backoff
+        max_retries = 3
+        base_delay = 2
+        
+        for attempt in range(max_retries):
+            try:
+                response = self.client.chat.completions.create(
+                    model="gpt-4o",
+                    messages=[
+                        {"role": "system", "content": "You are an expert data engineer who converts SQL queries to dbt models."},
+                        {"role": "user", "content": prompt}
+                    ],
+                    temperature=0.3,
+                    max_tokens=2000
+                )
                 
-        except Exception as e:
-            print(f"Error converting query from {query_info['file']}: {e}")
-            return None
+                # Extract JSON from response
+                response_text = response.choices[0].message.content
+                
+                # Try to parse JSON from the response
+                json_match = re.search(r'\{.*\}', response_text, re.DOTALL)
+                if json_match:
+                    return json.loads(json_match.group(0))
+                else:
+                    print(f"Could not parse JSON from GPT-4 response for {query_info['file']}")
+                    return None
+                    
+            except Exception as e:
+                error_str = str(e)
+                
+                # Check for rate limit errors
+                if "rate" in error_str.lower() or "429" in error_str or "quota" in error_str.lower():
+                    if attempt < max_retries - 1:
+                        wait_time = base_delay * (2 ** attempt)  # Exponential backoff
+                        print(f"⚠️  Rate limit hit. Waiting {wait_time}s before retry (attempt {attempt + 1}/{max_retries})...")
+                        time.sleep(wait_time)
+                        continue
+                    else:
+                        print(f"❌ Rate limit error persists after {max_retries} retries")
+                        print(f"   Error: {error_str}")
+                        print(f"   Tip: Set MAX_QUERIES or increase DELAY_SECONDS")
+                        return None
+                
+                # Other errors
+                print(f"Error converting query from {query_info['file']}: {e}")
+                return None
+        
+        return None
     
     def create_dbt_model_file(self, model_info: Dict, original_file: str):
         """Create a dbt model file from the conversion."""
@@ -311,6 +335,16 @@ models:
         """Main execution flow."""
         print("Starting SQL to dbt conversion...")
         
+        # Get rate limiting configuration from environment
+        max_queries = int(os.getenv('MAX_QUERIES', '0'))  # 0 = unlimited
+        delay_between_queries = float(os.getenv('DELAY_SECONDS', '1.0'))
+        
+        if max_queries > 0:
+            print(f"⚠️  Limited to {max_queries} queries (set MAX_QUERIES env var to change)")
+        if delay_between_queries > 0:
+            print(f"⏱️  Delay between API calls: {delay_between_queries}s")
+        print()
+        
         # Find SQL queries
         queries = self.find_sql_queries()
         
@@ -318,22 +352,56 @@ models:
             print("No analytics SQL queries found.")
             return
         
-        # Convert each query
+        # Limit number of queries if specified
+        if max_queries > 0 and len(queries) > max_queries:
+            print(f"⚠️  Found {len(queries)} queries, but limiting to {max_queries}")
+            queries = queries[:max_queries]
+        
+        print(f"Processing {len(queries)} queries...")
+        print()
+        
+        # Convert each query with rate limiting
         models_created = []
+        failed_queries = []
+        
         for i, query_info in enumerate(queries, 1):
-            print(f"\nProcessing query {i}/{len(queries)} from {query_info['file']}")
-            model_info = self.convert_to_dbt_model(query_info)
+            print(f"Processing query {i}/{len(queries)} from {query_info['file']}")
             
-            if model_info:
-                model_file = self.create_dbt_model_file(model_info, query_info['file'])
-                if model_file:
-                    models_created.append(model_file)
+            # Add delay between requests to avoid rate limits
+            if i > 1 and delay_between_queries > 0:
+                time.sleep(delay_between_queries)
+            
+            try:
+                model_info = self.convert_to_dbt_model(query_info)
+                
+                if model_info:
+                    model_file = self.create_dbt_model_file(model_info, query_info['file'])
+                    if model_file:
+                        models_created.append(model_file)
+                        print(f"✓ Created model: {model_info['model_name']}")
+                else:
+                    failed_queries.append(query_info['file'])
+                    print(f"✗ Failed to convert (check logs above)")
+                    
+            except Exception as e:
+                failed_queries.append(query_info['file'])
+                print(f"✗ Error: {e}")
+            
+            print()
         
         # Create schema.yml
         if models_created:
             self.create_schema_yml(models_created)
             print(f"\n✅ Successfully created {len(models_created)} dbt models")
-        else:
+        
+        if failed_queries:
+            print(f"\n⚠️  {len(failed_queries)} queries failed to convert:")
+            for file in failed_queries[:10]:  # Show max 10
+                print(f"   - {file}")
+            if len(failed_queries) > 10:
+                print(f"   ... and {len(failed_queries) - 10} more")
+        
+        if not models_created:
             print("\n⚠️  No models were created")
 
 
