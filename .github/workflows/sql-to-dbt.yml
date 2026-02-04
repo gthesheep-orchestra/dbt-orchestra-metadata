@@ -1,0 +1,129 @@
+name: Convert SQL Queries to dbt Models
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_repository:
+        description: 'Repository to scan (owner/repo, e.g., myorg/app-repo)'
+        required: true
+        type: string
+      source_branch:
+        description: 'Branch to scan in source repository'
+        required: false
+        default: 'main'
+      target_directory:
+        description: 'Directory to scan for SQL queries in source repo'
+        required: false
+        default: '.'
+      dbt_models_dir:
+        description: 'dbt models output directory (in current repo)'
+        required: false
+        default: 'dbt/models/analytics'
+      create_pr_in:
+        description: 'Where to create PR (current or source)'
+        required: false
+        default: 'current'
+        type: choice
+        options:
+          - current
+          - source
+
+jobs:
+  convert-sql-to-dbt:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout current repository (dbt repo)
+        uses: actions/checkout@v4
+        with:
+          path: dbt-repo
+          token: ${{ secrets.PAT_TOKEN || secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+      
+      - name: Checkout source repository (to scan)
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.inputs.source_repository }}
+          ref: ${{ github.event.inputs.source_branch }}
+          path: source-repo
+          token: ${{ secrets.PAT_TOKEN || secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          pip install openai PyYAML gitpython
+      
+      - name: Scan source repo and convert SQL to dbt
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SOURCE_REPO_PATH: source-repo
+          DBT_REPO_PATH: dbt-repo
+          TARGET_DIR: ${{ github.event.inputs.target_directory || '.' }}
+          DBT_MODELS_DIR: ${{ github.event.inputs.dbt_models_dir || 'dbt/models/analytics' }}
+          SOURCE_REPOSITORY: ${{ github.event.inputs.source_repository }}
+          SOURCE_BRANCH: ${{ github.event.inputs.source_branch }}
+        working-directory: dbt-repo
+        run: |
+          python .github/scripts/sql_to_dbt_converter.py
+      
+      - name: Create Pull Request in current (dbt) repository
+        if: github.event.inputs.create_pr_in == 'current'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.PAT_TOKEN || secrets.GITHUB_TOKEN }}
+          path: dbt-repo
+          commit-message: 'Convert analytics SQL queries from ${{ github.event.inputs.source_repository }} to dbt models'
+          title: 'Analytics SQL to dbt Models Conversion from ${{ github.event.inputs.source_repository }}'
+          body: |
+            This PR converts SQL queries from **${{ github.event.inputs.source_repository }}** (branch: `${{ github.event.inputs.source_branch }}`) into dbt models.
+            
+            ## Source
+            - Repository: `${{ github.event.inputs.source_repository }}`
+            - Branch: `${{ github.event.inputs.source_branch }}`
+            - Scanned directory: `${{ github.event.inputs.target_directory || '.' }}`
+            
+            ## Changes
+            - Scanned source repository for SQL queries in analytics contexts
+            - Converted identified queries to dbt model format
+            - Added models to `${{ github.event.inputs.dbt_models_dir || 'dbt/models/analytics' }}`
+            
+            ## Review Notes
+            Please review:
+            - Model naming and organization
+            - SQL syntax and logic
+            - dbt configurations (materialization, tags, etc.)
+            - Any needed schema.yml documentation
+          branch: feature/sql-to-dbt-conversion-${{ github.run_number }}
+          delete-branch: true
+      
+      - name: Create Pull Request in source repository
+        if: github.event.inputs.create_pr_in == 'source'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.PAT_TOKEN }}
+          path: source-repo
+          commit-message: 'Add dbt models converted from analytics SQL queries'
+          title: 'Add dbt Models for Analytics Queries'
+          body: |
+            This PR adds dbt models converted from SQL queries found in this repository.
+            
+            ## Changes
+            - Scanned repository for SQL queries in analytics contexts
+            - Converted identified queries to dbt model format
+            - Added models to `${{ github.event.inputs.dbt_models_dir || 'dbt/models/analytics' }}`
+            
+            ## Review Notes
+            Please review:
+            - Model naming and organization
+            - SQL syntax and logic
+            - dbt configurations (materialization, tags, etc.)
+            - Any needed schema.yml documentation
+            
+            These models can be used in a dbt project for analytics workflows.
+          branch: feature/add-dbt-models-${{ github.run_number }}
+          delete-branch: true
