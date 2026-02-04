@@ -11,6 +11,10 @@ on:
         description: 'Branch to scan in source repository'
         required: false
         default: 'main'
+      source_folder:
+        description: 'Folder to scan in source repository'
+        required: false
+        default: '.'
       target_directory:
         description: 'Directory to scan for SQL queries in source repo'
         required: false
@@ -48,6 +52,8 @@ jobs:
           path: source-repo
           token: ${{ secrets.PAT_TOKEN || secrets.GITHUB_TOKEN }}
           fetch-depth: 0
+          sparse-checkout:
+            - ${{ github.event.inputs.source_folder }}
       
       - name: Ls
         shell: bash
