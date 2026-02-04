@@ -49,6 +49,10 @@ jobs:
           token: ${{ secrets.PAT_TOKEN || secrets.GITHUB_TOKEN }}
           fetch-depth: 0
       
+      - name: Ls
+        shell: bash
+        run: ls .
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:

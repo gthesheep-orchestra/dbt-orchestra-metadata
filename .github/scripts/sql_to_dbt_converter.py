@@ -16,12 +16,20 @@ from openai import OpenAI
 class SQLToDbtConverter:
     def __init__(self, source_repo_path: str, dbt_repo_path: str, target_dir: str, 
                  dbt_models_dir: str, github_token: str, source_repository: str = None):
+        # Both repos are checked out as siblings in the GitHub Actions workspace
+        # The script runs from inside dbt-repo, so we need to go up to access source-repo
+        workspace_root = Path.cwd().parent
+        
         # Path to the repository to scan
-        self.source_repo_path = Path(source_repo_path)
-        self.target_dir = self.source_repo_path / target_dir
+        self.source_repo_path = workspace_root / source_repo_path
+        if target_dir == '.':
+            self.target_dir = self.source_repo_path
+        else:
+            self.target_dir = self.source_repo_path / target_dir
         
         # Path to the dbt repository (where models will be created)
-        self.dbt_repo_path = Path(dbt_repo_path)
+        # Since we're already in dbt-repo, use current directory
+        self.dbt_repo_path = Path.cwd()
         self.dbt_models_dir = self.dbt_repo_path / dbt_models_dir
         
         # GitHub Models API client (uses OpenAI SDK with GitHub endpoint)
@@ -53,12 +61,23 @@ class SQLToDbtConverter:
         """Scan repository for SQL queries in analytics contexts."""
         sql_queries = []
         
-        print(f"Scanning source repository at: {self.source_repo_path}")
-        print(f"Target directory: {self.target_dir}")
+        print(f"Current working directory: {Path.cwd()}")
+        print(f"Source repository path: {self.source_repo_path}")
+        print(f"Target scan directory: {self.target_dir}")
+        print(f"dbt repository path: {self.dbt_repo_path}")
+        print(f"dbt models output directory: {self.dbt_models_dir}")
+        print()
+        
+        if not self.source_repo_path.exists():
+            print(f"Error: Source repository path does not exist: {self.source_repo_path}")
+            print(f"Available directories in parent: {list(self.source_repo_path.parent.iterdir())}")
+            return []
         
         if not self.target_dir.exists():
             print(f"Error: Target directory does not exist: {self.target_dir}")
             return []
+        
+        print(f"Scanning for SQL queries in: {self.target_dir}")
         
         for file_path in self.target_dir.rglob('*'):
             if not file_path.is_file():
