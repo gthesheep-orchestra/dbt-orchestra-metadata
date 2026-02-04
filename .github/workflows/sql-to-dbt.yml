@@ -52,8 +52,8 @@ jobs:
           path: source-repo
           token: ${{ secrets.PAT_TOKEN || secrets.GITHUB_TOKEN }}
           fetch-depth: 0
-          sparse-checkout:
-            - ${{ github.event.inputs.source_folder }}
+          sparse-checkout: |
+            ${{ github.event.inputs.source_folder }}
       
       - name: Ls
         shell: bash
