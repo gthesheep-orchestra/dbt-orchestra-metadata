@@ -65,6 +65,7 @@ jobs:
       - name: Scan source repo and convert SQL to dbt
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MODEL_TOKEN: ${{ secrets.MODEL_TOKEN }}
           SOURCE_REPO_PATH: source-repo
           DBT_REPO_PATH: dbt-repo
           TARGET_DIR: ${{ github.event.inputs.target_directory || '.' }}

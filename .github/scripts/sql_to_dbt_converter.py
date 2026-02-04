@@ -15,7 +15,7 @@ from openai import OpenAI
 
 class SQLToDbtConverter:
     def __init__(self, source_repo_path: str, dbt_repo_path: str, target_dir: str, 
-                 dbt_models_dir: str, github_token: str, source_repository: str = None):
+                 dbt_models_dir: str, github_token: str, model_token: str, source_repository: str = None):
         # Both repos are checked out as siblings in the GitHub Actions workspace
         # The script runs from inside dbt-repo, so we need to go up to access source-repo
         workspace_root = Path.cwd().parent
@@ -34,8 +34,8 @@ class SQLToDbtConverter:
         
         # GitHub Models API client (uses OpenAI SDK with GitHub endpoint)
         self.client = OpenAI(
-            base_url="https://models.inference.ai.azure.com",
-            api_key=github_token
+            base_url="https://models.github.ai/inference",
+            api_key=model_token
         )
         self.source_repository = source_repository or "unknown"
         
@@ -344,6 +344,7 @@ if __name__ == "__main__":
     target_dir = os.getenv('TARGET_DIR', '.')
     dbt_models_dir = os.getenv('DBT_MODELS_DIR', 'dbt/models/analytics')
     github_token = os.getenv('GITHUB_TOKEN')
+    model_token = os.getenv('MODEL_TOKEN')
     source_repository = os.getenv('SOURCE_REPOSITORY', 'unknown')
     
     if not github_token:
@@ -366,6 +367,7 @@ if __name__ == "__main__":
         target_dir=target_dir,
         dbt_models_dir=dbt_models_dir,
         github_token=github_token,
+        model_token=model_token,
         source_repository=source_repository
     )
     converter.run()
