@@ -205,7 +205,7 @@ Important:
         for attempt in range(max_retries):
             try:
                 response = self.client.chat.completions.create(
-                    model="gpt-4o",
+                    model="openai/gpt-4o",
                     messages=[
                         {"role": "system", "content": "You are an expert data engineer who converts SQL queries to dbt models."},
                         {"role": "user", "content": prompt}
@@ -227,7 +227,6 @@ Important:
                     
             except Exception as e:
                 error_str = str(e)
-                print(error_str)
                 
                 # Check for rate limit errors
                 if "rate" in error_str.lower() or "429" in error_str or "quota" in error_str.lower():
