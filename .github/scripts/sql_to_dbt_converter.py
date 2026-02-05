@@ -196,6 +196,7 @@ Important:
 - Ensure the SQL is valid dbt/Jinja syntax
 - Use dbt ref() and source() functions where appropriate
 - Add clear comments for complex logic
+- Ensure all strings in JSON are properly escaped (use \\n for newlines, \\t for tabs)
 """
         
         # Retry logic with exponential backoff
@@ -207,7 +208,7 @@ Important:
                 response = self.client.chat.completions.create(
                     model="openai/gpt-4o-mini",
                     messages=[
-                        {"role": "system", "content": "You are an expert data engineer who converts SQL queries to dbt models."},
+                        {"role": "system", "content": "You are an expert data engineer who converts SQL queries to dbt models. Always return valid, properly escaped JSON with no control characters."},
                         {"role": "user", "content": prompt}
                     ],
                     temperature=0.3,
@@ -217,12 +218,38 @@ Important:
                 # Extract JSON from response
                 response_text = response.choices[0].message.content
                 
-                # Try to parse JSON from the response
-                json_match = re.search(r'\{.*\}', response_text, re.DOTALL)
-                if json_match:
-                    return json.loads(json_match.group(0))
+                # Clean up response - remove markdown code blocks
+                response_text = re.sub(r'```json\s*', '', response_text)
+                response_text = re.sub(r'```\s*', '', response_text)
+                response_text = response_text.strip()
+                
+                # Try multiple JSON parsing strategies
+                parsed_json = None
+                
+                # Strategy 1: Direct parse
+                try:
+                    parsed_json = json.loads(response_text)
+                except json.JSONDecodeError:
+                    # Strategy 2: Extract JSON object with regex
+                    json_match = re.search(r'\{.*\}', response_text, re.DOTALL)
+                    if json_match:
+                        json_str = json_match.group(0)
+                        try:
+                            # Strategy 3: Parse with strict=False (allows control characters)
+                            parsed_json = json.loads(json_str, strict=False)
+                        except json.JSONDecodeError:
+                            # Strategy 4: Replace common control characters
+                            json_str_cleaned = json_str.replace('\n', '\\n').replace('\r', '\\r').replace('\t', '\\t')
+                            try:
+                                parsed_json = json.loads(json_str_cleaned)
+                            except:
+                                pass
+                
+                if parsed_json:
+                    return parsed_json
                 else:
-                    print(f"Could not parse JSON from GPT-4 response for {query_info['file']}")
+                    print(f"Could not parse JSON from response for {query_info['file']}")
+                    print(f"Response preview: {response_text[:200]}")
                     return None
                     
             except Exception as e:
