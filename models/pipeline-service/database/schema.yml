@@ -1,0 +1,351 @@
+version: 2
+
+models:
+  - name: task_run_analytics
+    description: "Auto-generated analytics model"
+    columns:
+      - name: id
+        description: "Primary identifier"
+
+  - name: task_run_usage_by_time_bucket
+    description: "Auto-generated analytics model"
+    columns:
+      - name: id
+        description: "Primary identifier"
+
+  - name: task_run_statistics
+    description: "Auto-generated analytics model"
+    columns:
+      - name: id
+        description: "Primary identifier"
+
+  - name: last_successful_production_task_run
+    description: "Auto-generated analytics model"
+    columns:
+      - name: id
+        description: "Primary identifier"
+
+  - name: last_dbt_core_task_run
+    description: "Auto-generated analytics model"
+    columns:
+      - name: id
+        description: "Primary identifier"
+
+  - name: task_run_summary
+    description: "Auto-generated analytics model"
+    columns:
+      - name: id
+        description: "Primary identifier"
+
+  - name: task_run_analytics
+    description: "Auto-generated analytics model"
+    columns:
+      - name: id
+        description: "Primary identifier"
+
+  - name: task_run_usage_by_time_bucket
+    description: "Auto-generated analytics model"
+    columns:
+      - name: id
+        description: "Primary identifier"
+
+  - name: task_run_summary
+    description: "Auto-generated analytics model"
+    columns:
+      - name: id
+        description: "Primary identifier"
+
+  - name: last_successful_production_task_run
+    description: "Auto-generated analytics model"
+    columns:
+      - name: id
+        description: "Primary identifier"
+
+  - name: last_dbt_core_task_run
+    description: "Auto-generated analytics model"
+    columns:
+      - name: id
+        description: "Primary identifier"
+
+  - name: task_run_summary
+    description: "Auto-generated analytics model"
+    columns:
+      - name: id
+        description: "Primary identifier"
+
+  - name: task_run_analytics
+    description: "Auto-generated analytics model"
+    columns:
+      - name: id
+        description: "Primary identifier"
+
+  - name: task_runs_with_time_series
+    description: "Auto-generated analytics model"
+    columns:
+      - name: id
+        description: "Primary identifier"
+
+  - name: task_run_analytics
+    description: "Auto-generated analytics model"
+    columns:
+      - name: id
+        description: "Primary identifier"
+
+  - name: task_runs_time_series
+    description: "Auto-generated analytics model"
+    columns:
+      - name: id
+        description: "Primary identifier"
+
+  - name: task_run_usage_buckets
+    description: "Auto-generated analytics model"
+    columns:
+      - name: id
+        description: "Primary identifier"
+
+  - name: grouped_task_run_or_operation_summary
+    description: "Auto-generated analytics model"
+    columns:
+      - name: id
+        description: "Primary identifier"
+
+  - name: last_successful_production_task_run
+    description: "Auto-generated analytics model"
+    columns:
+      - name: id
+        description: "Primary identifier"
+
+  - name: last_dbt_core_task_run
+    description: "Auto-generated analytics model"
+    columns:
+      - name: id
+        description: "Primary identifier"
+
+  - name: bucketed_asset_metrics
+    description: "Auto-generated analytics model"
+    columns:
+      - name: id
+        description: "Primary identifier"
+
+  - name: bucketed_asset_metrics
+    description: "Auto-generated analytics model"
+    columns:
+      - name: id
+        description: "Primary identifier"
+
+  - name: asset_run_analytics
+    description: "Auto-generated analytics model"
+    columns:
+      - name: id
+        description: "Primary identifier"
+
+  - name: asset_run_analytics
+    description: "Auto-generated analytics model"
+    columns:
+      - name: id
+        description: "Primary identifier"
+
+  - name: asset_runs_time_series
+    description: "Auto-generated analytics model"
+    columns:
+      - name: id
+        description: "Primary identifier"
+
+  - name: bucketed_assets_coverage
+    description: "Auto-generated analytics model"
+    columns:
+      - name: id
+        description: "Primary identifier"
+
+  - name: bucketed_assets_coverage
+    description: "Auto-generated analytics model"
+    columns:
+      - name: id
+        description: "Primary identifier"
+
+  - name: asset_metrics_coverage
+    description: "Auto-generated analytics model"
+    columns:
+      - name: id
+        description: "Primary identifier"
+
+  - name: total_assets_tested
+    description: "Auto-generated analytics model"
+    columns:
+      - name: id
+        description: "Primary identifier"
+
+  - name: assets_management_summary
+    description: "Auto-generated analytics model"
+    columns:
+      - name: id
+        description: "Primary identifier"
+
+  - name: lightweight_operations
+    description: "Auto-generated analytics model"
+    columns:
+      - name: id
+        description: "Primary identifier"
+
+  - name: task_run_operations
+    description: "Auto-generated analytics model"
+    columns:
+      - name: id
+        description: "Primary identifier"
+
+  - name: unique_operation_integrations
+    description: "Auto-generated analytics model"
+    columns:
+      - name: id
+        description: "Primary identifier"
+
+  - name: test_operation_counts_by_time_bucket
+    description: "Auto-generated analytics model"
+    columns:
+      - name: id
+        description: "Primary identifier"
+
+  - name: test_operation_bucket_counts
+    description: "Auto-generated analytics model"
+    columns:
+      - name: id
+        description: "Primary identifier"
+
+  - name: operation_bucket_counts
+    description: "Auto-generated analytics model"
+    columns:
+      - name: id
+        description: "Primary identifier"
+
+  - name: operation_metrics_summary
+    description: "Auto-generated analytics model"
+    columns:
+      - name: id
+        description: "Primary identifier"
+
+  - name: lightweight_operations
+    description: "Auto-generated analytics model"
+    columns:
+      - name: id
+        description: "Primary identifier"
+
+  - name: task_run_or_operation
+    description: "Auto-generated analytics model"
+    columns:
+      - name: id
+        description: "Primary identifier"
+
+  - name: unique_operation_integrations
+    description: "Auto-generated analytics model"
+    columns:
+      - name: id
+        description: "Primary identifier"
+
+  - name: test_operation_counts_by_time_bucket
+    description: "Auto-generated analytics model"
+    columns:
+      - name: id
+        description: "Primary identifier"
+
+  - name: test_operation_bucket_counts
+    description: "Auto-generated analytics model"
+    columns:
+      - name: id
+        description: "Primary identifier"
+
+  - name: operation_bucket_counts
+    description: "Auto-generated analytics model"
+    columns:
+      - name: id
+        description: "Primary identifier"
+
+  - name: operation_metrics_summary
+    description: "Auto-generated analytics model"
+    columns:
+      - name: id
+        description: "Primary identifier"
+
+  - name: lightweight_operations_for_analytics
+    description: "Auto-generated analytics model"
+    columns:
+      - name: id
+        description: "Primary identifier"
+
+  - name: paged_operations_or_tasks
+    description: "Auto-generated analytics model"
+    columns:
+      - name: id
+        description: "Primary identifier"
+
+  - name: unique_operation_integrations
+    description: "Auto-generated analytics model"
+    columns:
+      - name: id
+        description: "Primary identifier"
+
+  - name: operations_filtered_by_asset
+    description: "Auto-generated analytics model"
+    columns:
+      - name: id
+        description: "Primary identifier"
+
+  - name: test_operations_bucket
+    description: "Auto-generated analytics model"
+    columns:
+      - name: id
+        description: "Primary identifier"
+
+  - name: operations_with_assets
+    description: "Auto-generated analytics model"
+    columns:
+      - name: id
+        description: "Primary identifier"
+
+  - name: test_operations_bucket_counts
+    description: "Auto-generated analytics model"
+    columns:
+      - name: id
+        description: "Primary identifier"
+
+  - name: operations_assets_filter
+    description: "Auto-generated analytics model"
+    columns:
+      - name: id
+        description: "Primary identifier"
+
+  - name: bucketed_operation_counts
+    description: "Auto-generated analytics model"
+    columns:
+      - name: id
+        description: "Primary identifier"
+
+  - name: operation_bucket_counts
+    description: "Auto-generated analytics model"
+    columns:
+      - name: id
+        description: "Primary identifier"
+
+  - name: grouped_operations
+    description: "Auto-generated analytics model"
+    columns:
+      - name: id
+        description: "Primary identifier"
+
+  - name: pipeline_run_analytics
+    description: "Auto-generated analytics model"
+    columns:
+      - name: id
+        description: "Primary identifier"
+
+  - name: pipeline_run_analytics
+    description: "Auto-generated analytics model"
+    columns:
+      - name: id
+        description: "Primary identifier"
+
+  - name: pipeline_runs_by_time_bucket
+    description: "Auto-generated analytics model"
+    columns:
+      - name: id
+        description: "Primary identifier"
+
