@@ -205,7 +205,7 @@ Important:
         for attempt in range(max_retries):
             try:
                 response = self.client.chat.completions.create(
-                    model="openai/gpt-4o",
+                    model="openai/gpt-4o-mini",
                     messages=[
                         {"role": "system", "content": "You are an expert data engineer who converts SQL queries to dbt models."},
                         {"role": "user", "content": prompt}
