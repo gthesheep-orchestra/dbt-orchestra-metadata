@@ -227,6 +227,7 @@ Important:
                     
             except Exception as e:
                 error_str = str(e)
+                print(error_str)
                 
                 # Check for rate limit errors
                 if "rate" in error_str.lower() or "429" in error_str or "quota" in error_str.lower():
