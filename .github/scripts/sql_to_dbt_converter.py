@@ -181,6 +181,10 @@ Please provide:
 3. Suggested materialization strategy (view, table, incremental)
 4. Any recommended configurations (tags, schema, etc.)
 5. A description for the model
+6. Ensure models are dbt compatible, using ref() and source() where appropriate
+7. Product a single documentation file per model, with relevant tests
+8. Don't include parameters as filters in the query.
+9. If multiple models look extremely similar, combine them into a single model with appropriate parameters.
 
 Return your response as JSON with the following structure:
 {{
