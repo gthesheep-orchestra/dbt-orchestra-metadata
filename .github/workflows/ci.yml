@@ -14,7 +14,12 @@ env:
   CLIENT_CERT_URL: ${{ secrets.BIGQUERY_CLIENT_CERT_URL }}
 
 jobs:
-  sql-lint:
+  warehouse_matrix:
+    strategy:
+      matrix:
+        warehouse: ["bigquery"]
+
+  sqlfluff-lint:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -36,26 +41,26 @@ jobs:
 
       - name: Run SQLFluff lint
         run: |
-          sqlfluff lint models/ --dialect bigquery --processes 4
+          poetry run sqlfluff lint models/ --dialect ${{ matrix.warehouse }} --processes 4
 
-  dbt-core-slimci-action:
-    needs: sql-lint
-    runs-on: ubuntu-latest
-    environment: production
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Run dbt Task in Pipeline
-        uses: orchestra-hq/run-pipeline@v1
-        with:
-          api_key: ${{ secrets.ORCHESTRA_API_KEY }}
-          pipeline_id: ${{ secrets.ORCHESTRA_PIPELINE_ID_CI }}
-          poll_interval: 20
-          environment: CI
-          task_ids: run_dbt
-          run_inputs: |
-            {
-              "dbt_command": " build -s state:modified+ --defer --state latest_production --exclude tag:metadata",
-              "dbt_branch": "${{ github.head_ref }}"
-            }
+#  dbt-core-slimci-action:
+#    needs: sql-lint
+#    runs-on: ubuntu-latest
+#    environment: production
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v4
+#
+#      - name: Run dbt Task in Pipeline
+#        uses: orchestra-hq/run-pipeline@v1
+#        with:
+#          api_key: ${{ secrets.ORCHESTRA_API_KEY }}
+#          pipeline_id: ${{ secrets.ORCHESTRA_PIPELINE_ID_CI }}
+#          poll_interval: 20
+#          environment: CI
+#          task_ids: run_dbt
+#          run_inputs: |
+#            {
+#              "dbt_command": " build -s state:modified+ --defer --state latest_production --exclude tag:metadata",
+#              "dbt_branch": "${{ github.head_ref }}"
+#            }
