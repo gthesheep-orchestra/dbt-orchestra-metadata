@@ -129,7 +129,7 @@ final as (
         coalesce(pd.cancelled_pipeline_runs, 0) as cancelled_pipeline_runs,
         case
             when coalesce(pd.pipeline_runs, 0) > 0
-            then coalesce(pd.successful_pipeline_runs, 0) * 100.0 / pd.pipeline_runs
+                then coalesce(pd.successful_pipeline_runs, 0) * 100.0 / pd.pipeline_runs
         end as pipeline_success_rate_pct,
         pd.avg_pipeline_duration_seconds,
         pd.max_pipeline_duration_seconds,
@@ -144,7 +144,7 @@ final as (
         coalesce(td.skipped_task_runs, 0) as skipped_task_runs,
         case
             when coalesce(td.task_runs, 0) > 0
-            then coalesce(td.successful_task_runs, 0) * 100.0 / td.task_runs
+                then coalesce(td.successful_task_runs, 0) * 100.0 / td.task_runs
         end as task_success_rate_pct,
         td.avg_task_duration_seconds,
         coalesce(td.total_task_duration_seconds, 0) as total_task_duration_seconds,
@@ -157,7 +157,7 @@ final as (
         coalesce(od.failed_operations, 0) as failed_operations,
         case
             when coalesce(od.total_operations, 0) > 0
-            then coalesce(od.successful_operations, 0) * 100.0 / od.total_operations
+                then coalesce(od.successful_operations, 0) * 100.0 / od.total_operations
         end as operation_success_rate_pct,
         coalesce(od.ingestion_operations, 0) as ingestion_operations,
         coalesce(od.transformation_operations, 0) as transformation_operations,
@@ -170,7 +170,7 @@ final as (
         -- computed fields
         case
             when coalesce(pd.pipeline_runs, 0) > 0
-            then coalesce(td.task_runs, 0) * 1.0 / pd.pipeline_runs
+                then coalesce(td.task_runs, 0) * 1.0 / pd.pipeline_runs
         end as avg_tasks_per_pipeline,
 
         current_timestamp as updated_at

@@ -42,7 +42,7 @@ dev-dependencies = [
 
 [tool.sqlfluff.core]
 templater = "dbt"
-dialect = "ansi"
+dialect = "bigquery"
 
 [build-system]
 requires = ["hatchling"]

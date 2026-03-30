@@ -87,7 +87,7 @@ final as (
         -- task success rate
         case
             when coalesce(ts.total_tasks, 0) > 0
-            then coalesce(ts.successful_tasks, 0) * 100.0 / ts.total_tasks
+                then coalesce(ts.successful_tasks, 0) * 100.0 / ts.total_tasks
         end as task_success_rate_pct,
 
         -- dlt metadata

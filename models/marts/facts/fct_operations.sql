@@ -79,7 +79,7 @@ final as (
         -- rows per second throughput
         case
             when o.duration_seconds > 0 and o.rows_affected is not null
-            then o.rows_affected * 1.0 / o.duration_seconds
+                then o.rows_affected * 1.0 / o.duration_seconds
         end as rows_per_second,
 
         -- status flags

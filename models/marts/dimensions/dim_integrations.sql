@@ -82,7 +82,7 @@ select
     failed_task_runs,
     case
         when total_task_runs > 0
-        then successful_task_runs * 100.0 / total_task_runs
+            then successful_task_runs * 100.0 / total_task_runs
     end as task_success_rate_pct,
     avg_task_duration_seconds,
     total_operations,

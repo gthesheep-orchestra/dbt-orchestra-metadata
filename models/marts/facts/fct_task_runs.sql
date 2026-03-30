@@ -121,7 +121,7 @@ final as (
         -- operation success rate
         case
             when coalesce(os.total_operations, 0) > 0
-            then coalesce(os.successful_operations, 0) * 100.0 / os.total_operations
+                then coalesce(os.successful_operations, 0) * 100.0 / os.total_operations
         end as operation_success_rate_pct,
 
         -- dlt metadata
