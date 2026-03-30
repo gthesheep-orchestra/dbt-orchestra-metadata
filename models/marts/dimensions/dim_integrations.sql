@@ -64,11 +64,25 @@ integration_stats as (
 
     from all_integrations as ai
     left join {{ ref('stg_orchestra__task_runs') }} as t
-        on ai.integration = t.integration
-        and (ai.integration_job = t.integration_job or (ai.integration_job is null and t.integration_job is null))
+        on
+            ai.integration = t.integration
+            and (
+                ai.integration_job = t.integration_job
+                or (
+                    ai.integration_job is null
+                    and t.integration_job is null
+                )
+            )
     left join {{ ref('stg_orchestra__operations') }} as o
-        on ai.integration = o.integration
-        and (ai.integration_job = o.integration_job or (ai.integration_job is null and o.integration_job is null))
+        on
+            ai.integration = o.integration
+            and (
+                ai.integration_job = o.integration_job
+                or (
+                    ai.integration_job is null
+                    and o.integration_job is null
+                )
+            )
     group by ai.integration, ai.integration_job
 
 )
