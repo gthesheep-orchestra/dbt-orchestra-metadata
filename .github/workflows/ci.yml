@@ -48,7 +48,7 @@ jobs:
         uses: orchestra-hq/run-pipeline@v1
         with:
           api_key: ${{ secrets.ORCHESTRA_API_KEY }}
-          pipeline_id: ${{ secrets.ORCHESTRA_PIPELINE_ID_CI }}
+          pipeline_id: ${{ secrets.ORCHESTRA_METADATA_PIPELINE_ID }}
           poll_interval: 20
           environment: CI
           task_ids: 9e7c692c-b686-4fe2-a406-e7123fa1ef1c
