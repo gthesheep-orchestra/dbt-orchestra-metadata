@@ -51,9 +51,9 @@ jobs:
           pipeline_id: ${{ secrets.ORCHESTRA_PIPELINE_ID_CI }}
           poll_interval: 20
           environment: CI
-          task_ids: run_dbt
+          task_ids: 9e7c692c-b686-4fe2-a406-e7123fa1ef1c
           run_inputs: |
             {
-              "dbt_command": " build -s state:modified+ --defer --state latest_production --exclude tag:metadata",
+              "dbt_command": " compile",
               "dbt_branch": "${{ github.head_ref }}"
             }
