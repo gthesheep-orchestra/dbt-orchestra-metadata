@@ -50,6 +50,3 @@ build-backend = "hatchling.build"
 
 [tool.poetry]
 package-mode = false
-
-[tool.poetry.scripts]
-dbt = "dbt.cli.main:cli"
