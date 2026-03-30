@@ -14,14 +14,11 @@ env:
   CLIENT_CERT_URL: ${{ secrets.BIGQUERY_CLIENT_CERT_URL }}
 
 jobs:
-  warehouse_matrix:
+  sqlfluff-lint:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         warehouse: ["bigquery"]
-
-  sqlfluff-lint:
-    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
