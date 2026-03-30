@@ -23,23 +23,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - name: Run SQLFluff Task in Pipeline
+        uses: orchestra-hq/run-pipeline@v1
         with:
-          python-version: '3.13'
-
-      - name: Install Poetry
-        uses: abatilo/actions-poetry@v3
-        with:
-          poetry-version: main
-
-      - name: Install Dependencies
-        run: |
-          poetry install
-
-      - name: Run SQLFluff lint
-        run: |
-          poetry run sqlfluff lint models/ --dialect ${{ matrix.warehouse }} --processes 4
+          api_key: ${{ secrets.ORCHESTRA_API_KEY }}
+          pipeline_id: ${{ secrets.ORCHESTRA_METADATA_PIPELINE_ID }}
+          poll_interval: 20
+          environment: Staging
+          task_ids: aa8783d2-5c3f-4cf1-a6c9-bef31ee71f9b
+          run_inputs: |
+            {
+              "git_branch": "${{ github.head_ref }}",
+              "warehouse": "${{ matrix.warehouse }}"
+            }
 
 #  dbt-core-slimci-action:
 #    needs: sql-lint
