@@ -99,9 +99,9 @@ final as (
         o._dlt_load_id,
         o._dlt_id
 
-    from operations o
-    left join task_context tc on o.task_run_id = tc.task_run_id
-    left join pipeline_context pc on tc.pipeline_run_id = pc.pipeline_run_id
+    from operations as o
+    left join task_context as tc on o.task_run_id = tc.task_run_id
+    left join pipeline_context as pc on tc.pipeline_run_id = pc.pipeline_run_id
 
 )
 

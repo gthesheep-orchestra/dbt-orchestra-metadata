@@ -175,9 +175,9 @@ final as (
 
         current_timestamp as updated_at
 
-    from pipeline_daily pd
-    full outer join task_daily td on pd.summary_date = td.summary_date
-    full outer join operations_daily od on coalesce(pd.summary_date, td.summary_date) = od.summary_date
+    from pipeline_daily as pd
+    full outer join task_daily as td on pd.summary_date = td.summary_date
+    full outer join operations_daily as od on coalesce(pd.summary_date, td.summary_date) = od.summary_date
 
 )
 

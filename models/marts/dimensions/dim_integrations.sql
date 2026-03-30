@@ -38,9 +38,9 @@ asset_integrations as (
 all_integrations as (
 
     select * from task_integrations
-    union
+    union distinct
     select * from operation_integrations
-    union
+    union distinct
     select * from asset_integrations
 
 ),
@@ -48,8 +48,8 @@ all_integrations as (
 integration_stats as (
 
     select
-        i.integration,
-        i.integration_job,
+        ai.integration,
+        ai.integration_job,
 
         -- task stats
         count(distinct t.task_run_id) as total_task_runs,
@@ -62,14 +62,14 @@ integration_stats as (
         sum(o.rows_affected) as total_rows_affected,
         avg(o.duration_seconds) as avg_operation_duration_seconds
 
-    from all_integrations i
-    left join {{ ref('stg_orchestra__task_runs') }} t
-        on i.integration = t.integration
-        and (i.integration_job = t.integration_job or (i.integration_job is null and t.integration_job is null))
-    left join {{ ref('stg_orchestra__operations') }} o
-        on i.integration = o.integration
-        and (i.integration_job = o.integration_job or (i.integration_job is null and o.integration_job is null))
-    group by 1, 2
+    from all_integrations as ai
+    left join {{ ref('stg_orchestra__task_runs') }} as t
+        on ai.integration = t.integration
+        and (ai.integration_job = t.integration_job or (ai.integration_job is null and t.integration_job is null))
+    left join {{ ref('stg_orchestra__operations') }} as o
+        on ai.integration = o.integration
+        and (ai.integration_job = o.integration_job or (ai.integration_job is null and o.integration_job is null))
+    group by ai.integration, ai.integration_job
 
 )
 

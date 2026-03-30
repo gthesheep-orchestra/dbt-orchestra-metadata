@@ -128,9 +128,9 @@ final as (
         tr._dlt_load_id,
         tr._dlt_id
 
-    from task_runs tr
-    left join operation_stats os on tr.task_run_id = os.task_run_id
-    left join pipeline_context pc on tr.pipeline_run_id = pc.pipeline_run_id
+    from task_runs as tr
+    left join operation_stats as os on tr.task_run_id = os.task_run_id
+    left join pipeline_context as pc on tr.pipeline_run_id = pc.pipeline_run_id
 
 )
 

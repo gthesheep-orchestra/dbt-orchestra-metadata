@@ -1,6 +1,6 @@
 [sqlfluff]
 templater = dbt
-dialect = ansi
+dialect = bigquery
 max_line_length = 120
 indent_unit = space
 large_file_skip_byte_limit = 0

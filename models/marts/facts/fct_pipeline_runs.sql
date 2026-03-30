@@ -94,8 +94,8 @@ final as (
         pr._dlt_load_id,
         pr._dlt_id
 
-    from pipeline_runs pr
-    left join task_run_stats ts on pr.pipeline_run_id = ts.pipeline_run_id
+    from pipeline_runs as pr
+    left join task_run_stats as ts on pr.pipeline_run_id = ts.pipeline_run_id
 
 )
 

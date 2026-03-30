@@ -27,7 +27,7 @@ renamed as (
         -- calculated fields
         case
             when completed_at is not null and started_at is not null
-            then {{ dbt_utils.datediff('started_at', 'completed_at', 'second') }}
+            then timestamp_diff(completed_at, started_at, second)
         end as duration_seconds,
 
         -- status flags
