@@ -15,6 +15,7 @@ env:
 
 jobs:
   warehouse_matrix:
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         warehouse: ["bigquery"]
