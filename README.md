@@ -9,7 +9,11 @@ This project uses [`uv`](https://docs.astral.sh/uv/) for Python package manageme
 uv sync
 ```
 
-That installs the default project dependencies, including `dbt-bigquery`, plus the standard development tools.
+That installs the default project dependencies, including `dbt-bigquery`, plus the standard development tools, for other warehouses:
+
+```bash
+uv sync --extra <warehouse_name>
+```
 
 Useful commands:
 
