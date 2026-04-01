@@ -1,174 +1,59 @@
-name: dbt CI with Orchestra
+name: dbt CI
 
 on:
-  push:
-    branches: [main]
   pull_request:
-    branches: [main]
+    branches:
+      - main
 
 env:
-  ORCHESTRA_API_URL: https://app.getorchestra.io/api/engine/public
-  # Set your Orchestra pipeline alias in repository secrets or variables
-  ORCHESTRA_PIPELINE_ALIAS: ${{ vars.ORCHESTRA_PIPELINE_ALIAS || 'dbt-ci' }}
+  GCP_REPO: ${{ secrets.BIGQUERY_REPO }}
+  PRIVATE_KEY_ID: ${{ secrets.BIGQUERY_PRIVATE_KEY_ID }}
+  PRIVATE_KEY: ${{ secrets.BIGQUERY_PRIVATE_KEY }}
+  CLIENT_EMAIL: ${{ secrets.BIGQUERY_CLIENT_EMAIL }}
+  CLIENT_ID: ${{ secrets.BIGQUERY_CLIENT_ID }}
+  CLIENT_CERT_URL: ${{ secrets.BIGQUERY_CLIENT_CERT_URL }}
 
 jobs:
-  lint:
-    name: SQLFluff Lint
+  sqlfluff-lint:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        warehouse: ["bigquery"]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run SQLFluff Task in Pipeline
+        uses: orchestra-hq/run-pipeline@v1
+        with:
+          api_key: ${{ secrets.ORCHESTRA_API_KEY }}
+          pipeline_id: ${{ secrets.ORCHESTRA_METADATA_PIPELINE_ID }}
+          poll_interval: 20
+          environment: Staging
+          task_ids: aa8783d2-5c3f-4cf1-a6c9-bef31ee71f9b
+          run_inputs: |
+            {
+              "git_branch": "${{ github.head_ref }}",
+              "warehouse": "${{ matrix.warehouse }}"
+            }
+
+  dbt-core-slimci-action:
+    needs: sqlfluff-lint
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Run dbt Task in Pipeline
+        uses: orchestra-hq/run-pipeline@v1
         with:
-          python-version: "3.11"
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v4
-        with:
-          version: "latest"
-
-      - name: Install dependencies
-        run: uv sync --extra ci
-
-      - name: Run SQLFluff lint
-        run: uv run sqlfluff lint models/ --format github-annotation-native
-
-  dbt-orchestra-ci:
-    name: dbt CI via Orchestra
-    runs-on: ubuntu-latest
-    needs: lint
-    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main'
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Trigger Orchestra Pipeline
-        id: trigger
-        env:
-          ORCHESTRA_API_KEY: ${{ secrets.ORCHESTRA_API_KEY }}
-        run: |
-          echo "Triggering Orchestra pipeline: $ORCHESTRA_PIPELINE_ALIAS"
-
-          # Prepare request body with branch and commit info
-          REQUEST_BODY=$(jq -n \
-            --arg branch "${{ github.head_ref || github.ref_name }}" \
-            --arg commit "${{ github.sha }}" \
-            '{branch: $branch, commit: $commit}')
-
-          # Trigger the pipeline
-          RESPONSE=$(curl -s -w "\n%{http_code}" \
-            -X POST \
-            -H "Authorization: Bearer $ORCHESTRA_API_KEY" \
-            -H "Content-Type: application/json" \
-            -d "$REQUEST_BODY" \
-            "$ORCHESTRA_API_URL/pipelines/$ORCHESTRA_PIPELINE_ALIAS/start")
-
-          HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
-          BODY=$(echo "$RESPONSE" | sed '$d')
-
-          if [ "$HTTP_CODE" != "200" ] && [ "$HTTP_CODE" != "201" ]; then
-            echo "Failed to trigger pipeline. HTTP $HTTP_CODE"
-            echo "$BODY"
-            exit 1
-          fi
-
-          PIPELINE_RUN_ID=$(echo "$BODY" | jq -r '.pipelineRunId')
-          echo "Pipeline run started: $PIPELINE_RUN_ID"
-          echo "pipeline_run_id=$PIPELINE_RUN_ID" >> $GITHUB_OUTPUT
-
-      - name: Wait for Pipeline Completion
-        id: wait
-        env:
-          ORCHESTRA_API_KEY: ${{ secrets.ORCHESTRA_API_KEY }}
-          PIPELINE_RUN_ID: ${{ steps.trigger.outputs.pipeline_run_id }}
-        run: |
-          echo "Waiting for pipeline run $PIPELINE_RUN_ID to complete..."
-
-          MAX_ATTEMPTS=60  # 30 minutes with 30s intervals
-          ATTEMPT=0
-
-          while [ $ATTEMPT -lt $MAX_ATTEMPTS ]; do
-            RESPONSE=$(curl -s \
-              -H "Authorization: Bearer $ORCHESTRA_API_KEY" \
-              "$ORCHESTRA_API_URL/pipeline_runs/$PIPELINE_RUN_ID/status")
-
-            STATUS=$(echo "$RESPONSE" | jq -r '.runStatus')
-            PIPELINE_NAME=$(echo "$RESPONSE" | jq -r '.pipelineName')
-
-            echo "[$ATTEMPT/$MAX_ATTEMPTS] Pipeline '$PIPELINE_NAME' status: $STATUS"
-
-            case "$STATUS" in
-              "SUCCEEDED")
-                echo "Pipeline completed successfully!"
-                echo "status=success" >> $GITHUB_OUTPUT
-                exit 0
-                ;;
-              "FAILED")
-                echo "Pipeline failed!"
-                echo "status=failed" >> $GITHUB_OUTPUT
-                exit 1
-                ;;
-              "CANCELLED"|"CANCELLING")
-                echo "Pipeline was cancelled"
-                echo "status=cancelled" >> $GITHUB_OUTPUT
-                exit 1
-                ;;
-              "WARNING")
-                echo "Pipeline completed with warnings"
-                echo "status=warning" >> $GITHUB_OUTPUT
-                exit 0
-                ;;
-              "RUNNING"|"CREATED")
-                # Still running, wait and retry
-                ;;
-              *)
-                echo "Unknown status: $STATUS"
-                ;;
-            esac
-
-            ATTEMPT=$((ATTEMPT + 1))
-            sleep 30
-          done
-
-          echo "Timeout waiting for pipeline to complete"
-          echo "status=timeout" >> $GITHUB_OUTPUT
-          exit 1
-
-      - name: Create PR Comment with Results
-        if: github.event_name == 'pull_request' && always()
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const status = '${{ steps.wait.outputs.status }}';
-            const runId = '${{ steps.trigger.outputs.pipeline_run_id }}';
-            const pipelineAlias = '${{ env.ORCHESTRA_PIPELINE_ALIAS }}';
-
-            const statusEmoji = {
-              'success': '✅',
-              'failed': '❌',
-              'cancelled': '⚠️',
-              'warning': '⚠️',
-              'timeout': '⏱️'
-            };
-
-            const body = `## Orchestra dbt CI Results ${statusEmoji[status] || '❓'}
-
-            | Property | Value |
-            |----------|-------|
-            | Pipeline | \`${pipelineAlias}\` |
-            | Run ID | \`${runId}\` |
-            | Status | **${status.toUpperCase()}** |
-            | Branch | \`${{ github.head_ref }}\` |
-            | Commit | \`${{ github.sha }}\` |
-
-            [View in Orchestra](https://app.getorchestra.io/pipelines/${runId})
-            `;
-
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: body
-            });
+          api_key: ${{ secrets.ORCHESTRA_API_KEY }}
+          pipeline_id: ${{ secrets.ORCHESTRA_METADATA_PIPELINE_ID }}
+          poll_interval: 20
+          environment: CI
+          task_ids: 9e7c692c-b686-4fe2-a406-e7123fa1ef1c
+          run_inputs: |
+            {
+              "dbt_command": " compile",
+              "dbt_branch": "${{ github.head_ref }}"
+            }

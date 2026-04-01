@@ -15,12 +15,12 @@ repos:
         additional_dependencies:
           - sqlfluff-templater-dbt>=3.0.0
           - dbt-core>=1.7.0
-        args: [--dialect, ansi]
+        args: [--dialect, bigquery]
         files: ^models/
 
       - id: sqlfluff-fix
         additional_dependencies:
           - sqlfluff-templater-dbt>=3.0.0
           - dbt-core>=1.7.0
-        args: [--dialect, ansi, --force]
+        args: [--dialect, bigquery, --force]
         files: ^models/

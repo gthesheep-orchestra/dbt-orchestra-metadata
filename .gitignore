@@ -214,5 +214,4 @@ logs/
 profiles.yml
 
 # uv
-uv.lock
 .python-version

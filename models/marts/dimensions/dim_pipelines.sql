@@ -33,14 +33,14 @@ pipeline_stats as (
         -- success rate
         case
             when count(*) > 0
-            then sum(case when is_successful then 1 else 0 end) * 100.0 / count(*)
+                then sum(case when is_successful then 1 else 0 end) * 100.0 / count(*)
         end as success_rate_pct,
 
         -- most common trigger
-        mode() within group (order by triggered_by) as most_common_trigger,
+        (approx_top_count(triggered_by, 1)[offset(0)]).value as most_common_trigger,
 
         -- most common branch
-        mode() within group (order by git_branch) as most_common_branch
+        (approx_top_count(git_branch, 1)[offset(0)]).value as most_common_branch
 
     from pipeline_runs
     where not is_in_progress

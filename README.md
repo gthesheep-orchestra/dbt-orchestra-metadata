@@ -1,6 +1,28 @@
 # dbt-orchestra-metadata
 dbt Package for Orchestra metadata
 
+## Development Setup
+
+This project uses [`uv`](https://docs.astral.sh/uv/) for Python package management.
+
+```bash
+uv sync
+```
+
+That installs the default project dependencies, including `dbt-bigquery`, plus the standard development tools, for other warehouses:
+
+```bash
+uv sync --extra <warehouse_name>
+```
+
+Useful commands:
+
+```bash
+uv run dbt --version
+uv run sqlfluff lint models
+uv lock
+```
+
 ## Overview
 
 This dbt package transforms Orchestra platform metadata into an analytics-ready dimensional model. It processes execution metadata from Orchestra's REST API to provide insights into pipeline orchestration, data operations, and asset lineage.
