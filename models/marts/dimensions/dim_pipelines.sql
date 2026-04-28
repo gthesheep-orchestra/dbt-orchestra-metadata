@@ -37,10 +37,10 @@ pipeline_stats as (
         end as success_rate_pct,
 
         -- most common trigger
-        (approx_top_count(triggered_by, 1)[offset(0)]).value as most_common_trigger,
+        {{ most_common_value('triggered_by') }} as most_common_trigger,
 
         -- most common branch
-        (approx_top_count(git_branch, 1)[offset(0)]).value as most_common_branch
+        {{ most_common_value('git_branch') }} as most_common_branch
 
     from pipeline_runs
     where not is_in_progress

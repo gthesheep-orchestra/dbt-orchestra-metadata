@@ -31,7 +31,7 @@ renamed as (
         operation_status = 'FAILED' as is_failed,
         operation_status = 'SKIPPED' as is_skipped,
         operation_status = 'WARNING' as has_warning,
-        operation_status = 'CANCELLED' as is_cancelled,
+        operation_status in ('CANCELLED', 'CANCELING', 'CANCELLING') as is_cancelled,
 
         -- operation type flags
         operation_type in ('INGESTION', 'SOURCE') as is_ingestion_operation,

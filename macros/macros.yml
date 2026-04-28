@@ -13,6 +13,7 @@ macros:
       - name: start_col
         type: string
         description: SQL expression representing the start timestamp.
+
   - name: source_column_or_null
     description: >
       Returns the source column expression when it exists on the relation, or NULL
@@ -24,3 +25,12 @@ macros:
       - name: column_name
         type: string
         description: Column name to select when available.
+
+  - name: most_common_value
+    description: >
+      Returns the most frequent non-null value from an expression using
+      adapter-specific SQL.
+    arguments:
+      - name: expression
+        type: string
+        description: SQL expression to aggregate.
