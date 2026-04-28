@@ -1,0 +1,15 @@
+version: 2
+
+macros:
+  - name: timestamp_diff_seconds
+    description: >
+      Returns the whole-second difference between two timestamp expressions in a
+      warehouse-agnostic way. Use this macro instead of calling warehouse-native
+      timestamp diff functions directly.
+    arguments:
+      - name: end_col
+        type: string
+        description: SQL expression representing the end timestamp.
+      - name: start_col
+        type: string
+        description: SQL expression representing the start timestamp.

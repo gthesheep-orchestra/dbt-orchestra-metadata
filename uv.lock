@@ -678,6 +678,7 @@ source = { virtual = "." }
 dependencies = [
     { name = "dbt-bigquery" },
     { name = "dbt-core" },
+    { name = "dbt-duckdb" },
     { name = "sqlfluff" },
     { name = "sqlfluff-templater-dbt" },
 ]
@@ -714,6 +715,7 @@ requires-dist = [
     { name = "dbt-bigquery", specifier = ">=1.7.0,<2.0.0" },
     { name = "dbt-core", specifier = ">=1.7.0,<2.0.0" },
     { name = "dbt-databricks", marker = "extra == 'databricks'", specifier = ">=1.7.0,<2.0.0" },
+    { name = "dbt-duckdb", specifier = ">=1.7.0,<2.0.0" },
     { name = "dbt-duckdb", marker = "extra == 'duckdb'", specifier = ">=1.7.0,<2.0.0" },
     { name = "dbt-postgres", marker = "extra == 'postgres'", specifier = ">=1.7.0,<2.0.0" },
     { name = "dbt-redshift", marker = "extra == 'redshift'", specifier = ">=1.7.0,<2.0.0" },

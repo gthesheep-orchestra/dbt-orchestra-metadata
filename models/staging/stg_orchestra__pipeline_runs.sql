@@ -27,7 +27,7 @@ renamed as (
         -- calculated fields
         case
             when completed_at is not null and started_at is not null
-                then timestamp_diff(completed_at, started_at, second)
+                then {{ timestamp_diff_seconds('completed_at', 'started_at') }}
         end as duration_seconds,
 
         -- status flags
