@@ -1,6 +1,8 @@
+{%- set assets_source = source('orchestra', 'assets') -%}
+
 with source as (
 
-    select * from {{ source('orchestra', 'assets') }}
+    select * from {{ assets_source }}
 
 ),
 
@@ -18,8 +20,8 @@ renamed as (
         status as asset_status,
 
         -- dependencies (kept as JSON for downstream parsing)
-        {{ source_column_or_null(source('orchestra', 'assets'), 'upstream_dependencies') }} as upstream_dependencies,
-        {{ source_column_or_null(source('orchestra', 'assets'), 'downstream_dependencies') }} as downstream_dependencies,
+        {{ source_column_or_null(assets_source, 'upstream_dependencies') }} as upstream_dependencies,
+        {{ source_column_or_null(assets_source, 'downstream_dependencies') }} as downstream_dependencies,
 
         -- metrics
         row_count,
