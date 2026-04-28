@@ -18,8 +18,8 @@ renamed as (
         status as asset_status,
 
         -- dependencies (kept as JSON for downstream parsing)
-        upstream_dependencies,
-        downstream_dependencies,
+        {{ source_column_or_null(source('orchestra', 'assets'), 'upstream_dependencies') }} as upstream_dependencies,
+        {{ source_column_or_null(source('orchestra', 'assets'), 'downstream_dependencies') }} as downstream_dependencies,
 
         -- metrics
         row_count,

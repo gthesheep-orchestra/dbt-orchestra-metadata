@@ -14,7 +14,7 @@ renamed as (
         -- attributes
         pipeline_name,
         run_status,
-        triggered_by,
+        {{ source_column_or_null(source('orchestra', 'pipeline_runs'), 'triggered_by') }} as triggered_by,
         branch as git_branch,
         commit as git_commit_sha,
 

@@ -13,3 +13,14 @@ macros:
       - name: start_col
         type: string
         description: SQL expression representing the start timestamp.
+  - name: source_column_or_null
+    description: >
+      Returns the source column expression when it exists on the relation, or NULL
+      when the column is not present in the current source schema.
+    arguments:
+      - name: relation
+        type: relation
+        description: Source relation to introspect.
+      - name: column_name
+        type: string
+        description: Column name to select when available.
