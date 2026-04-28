@@ -9,6 +9,7 @@ license = { text = "MIT" }
 dependencies = [
     "dbt-core>=1.7.0,<2.0.0",
     "dbt-bigquery>=1.7.0,<2.0.0",
+    "dbt-duckdb>=1.7.0,<2.0.0",
     "sqlfluff>=3.0.0",
     "sqlfluff-templater-dbt>=3.0.0",
 ]
