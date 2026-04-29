@@ -23,6 +23,10 @@ models:
             type: string
             label: "Pipeline Run ID"
             hidden: true
+          metrics:
+            pipeline_runs_count:
+              type: count_distinct
+              label: "Pipeline Runs"
       - name: pipeline_id
         description: Identifier of the pipeline definition
         data_tests:
@@ -73,6 +77,10 @@ models:
         description: Timestamp when the pipeline run was created
         data_tests:
           - not_null
+          - timestamp_order:
+              before_column: started_at_utc
+          - timestamp_order:
+              before_column: completed_at_utc
         meta:
           dimension:
             type: timestamp
@@ -80,6 +88,11 @@ models:
             time_intervals: ['DAY', 'WEEK', 'MONTH', 'QUARTER', 'YEAR']
       - name: started_at_utc
         description: Timestamp when execution started
+        data_tests:
+          - timestamp_order:
+              before_column: completed_at_utc
+          - timestamp_order:
+              before_column: updated_at_utc
         meta:
           dimension:
             type: timestamp
@@ -92,6 +105,9 @@ models:
             label: "Updated At"
       - name: completed_at_utc
         description: Timestamp when execution completed
+        data_tests:
+          - timestamp_order:
+              before_column: updated_at_utc
         meta:
           dimension:
             type: timestamp
@@ -116,6 +132,8 @@ models:
             label: "Completed Date"
       - name: duration_seconds
         description: Total execution duration in seconds
+        data_tests:
+          - valid_duration
         meta:
           metrics:
             total_pipeline_duration_seconds:
@@ -259,10 +277,19 @@ models:
             type: string
             label: "Task Run ID"
             hidden: true
+          metrics:
+            task_runs_count:
+              type: count_distinct
+              label: "Task Runs"
       - name: pipeline_run_id
         description: ID of the parent pipeline run
         data_tests:
           - not_null
+          - relationships:
+              to: ref('fct_pipeline_runs')
+              field: pipeline_run_id
+              config:
+                severity: warn
         meta:
           dimension:
             type: string
@@ -340,6 +367,10 @@ models:
         description: Timestamp when the task run was created
         data_tests:
           - not_null
+          - timestamp_order:
+              before_column: started_at_utc
+          - timestamp_order:
+              before_column: completed_at_utc
         meta:
           dimension:
             type: timestamp
@@ -347,6 +378,11 @@ models:
             time_intervals: ['DAY', 'WEEK', 'MONTH', 'QUARTER', 'YEAR']
       - name: started_at_utc
         description: Timestamp when execution started
+        data_tests:
+          - timestamp_order:
+              before_column: completed_at_utc
+          - timestamp_order:
+              before_column: updated_at_utc
         meta:
           dimension:
             type: timestamp
@@ -359,6 +395,9 @@ models:
             label: "Updated At"
       - name: completed_at_utc
         description: Timestamp when execution completed
+        data_tests:
+          - timestamp_order:
+              before_column: updated_at_utc
         meta:
           dimension:
             type: timestamp
@@ -383,6 +422,8 @@ models:
             label: "Completed Date"
       - name: duration_seconds
         description: Total execution duration in seconds
+        data_tests:
+          - valid_duration
         meta:
           metrics:
             total_task_duration_seconds:
@@ -552,8 +593,18 @@ models:
             type: string
             label: "Operation ID"
             hidden: true
+          metrics:
+            operations_count:
+              type: count_distinct
+              label: "Operations"
       - name: task_run_id
         description: ID of the parent task run
+        data_tests:
+          - relationships:
+              to: ref('fct_task_runs')
+              field: task_run_id
+              config:
+                severity: warn
         meta:
           dimension:
             type: string
@@ -675,6 +726,8 @@ models:
               format: "0,0"
       - name: duration_seconds
         description: Operation duration in seconds
+        data_tests:
+          - valid_duration
         meta:
           metrics:
             total_operation_duration_seconds:

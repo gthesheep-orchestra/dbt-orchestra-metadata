@@ -131,6 +131,10 @@ final as (
             when coalesce(pd.pipeline_runs, 0) > 0
                 then coalesce(pd.successful_pipeline_runs, 0) * 100.0 / pd.pipeline_runs
         end as pipeline_success_rate_pct,
+        case
+            when coalesce(pd.pipeline_runs, 0) > 0
+                then coalesce(pd.failed_pipeline_runs, 0) * 100.0 / pd.pipeline_runs
+        end as pipeline_failure_rate_pct,
         pd.avg_pipeline_duration_seconds,
         pd.max_pipeline_duration_seconds,
         coalesce(pd.total_pipeline_duration_seconds, 0) as total_pipeline_duration_seconds,
@@ -146,6 +150,10 @@ final as (
             when coalesce(td.task_runs, 0) > 0
                 then coalesce(td.successful_task_runs, 0) * 100.0 / td.task_runs
         end as task_success_rate_pct,
+        case
+            when coalesce(td.task_runs, 0) > 0
+                then coalesce(td.failed_task_runs, 0) * 100.0 / td.task_runs
+        end as task_failure_rate_pct,
         td.avg_task_duration_seconds,
         coalesce(td.total_task_duration_seconds, 0) as total_task_duration_seconds,
         coalesce(td.unique_integrations, 0) as unique_integrations,
@@ -159,6 +167,10 @@ final as (
             when coalesce(od.total_operations, 0) > 0
                 then coalesce(od.successful_operations, 0) * 100.0 / od.total_operations
         end as operation_success_rate_pct,
+        case
+            when coalesce(od.total_operations, 0) > 0
+                then coalesce(od.failed_operations, 0) * 100.0 / od.total_operations
+        end as operation_failure_rate_pct,
         coalesce(od.ingestion_operations, 0) as ingestion_operations,
         coalesce(od.transformation_operations, 0) as transformation_operations,
         coalesce(od.testing_operations, 0) as testing_operations,

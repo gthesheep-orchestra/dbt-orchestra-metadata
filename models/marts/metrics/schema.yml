@@ -55,6 +55,14 @@ models:
               type: average
               label: "Avg Pipeline Success Rate %"
               format: "percent"
+      - name: pipeline_failure_rate_pct
+        description: Pipeline failure rate percentage
+        meta:
+          metrics:
+            avg_daily_pipeline_failure_rate:
+              type: average
+              label: "Avg Pipeline Failure Rate %"
+              format: "percent"
       - name: avg_pipeline_duration_seconds
         description: Average pipeline duration in seconds
         meta:
@@ -65,6 +73,12 @@ models:
               round: 1
       - name: max_pipeline_duration_seconds
         description: Maximum pipeline duration
+        meta:
+          metrics:
+            trend_max_pipeline_duration:
+              type: max
+              label: "Trend Max Pipeline Duration (sec)"
+              round: 1
       - name: total_pipeline_duration_seconds
         description: Total pipeline duration
         meta:
@@ -114,6 +128,14 @@ models:
               type: average
               label: "Avg Task Success Rate %"
               format: "percent"
+      - name: task_failure_rate_pct
+        description: Task failure rate percentage
+        meta:
+          metrics:
+            avg_daily_task_failure_rate:
+              type: average
+              label: "Avg Task Failure Rate %"
+              format: "percent"
       - name: avg_task_duration_seconds
         description: Average task duration in seconds
         meta:
@@ -150,8 +172,18 @@ models:
               label: "Operations"
       - name: successful_operations
         description: Successful operations
+        meta:
+          metrics:
+            daily_successful_operations:
+              type: sum
+              label: "Successful Operations"
       - name: failed_operations
         description: Failed operations
+        meta:
+          metrics:
+            daily_failed_operations:
+              type: sum
+              label: "Failed Operations"
       - name: operation_success_rate_pct
         description: Operation success rate percentage
         meta:
@@ -159,6 +191,14 @@ models:
             avg_daily_operation_success_rate:
               type: average
               label: "Avg Operation Success Rate %"
+              format: "percent"
+      - name: operation_failure_rate_pct
+        description: Operation failure rate percentage
+        meta:
+          metrics:
+            avg_daily_operation_failure_rate:
+              type: average
+              label: "Avg Operation Failure Rate %"
               format: "percent"
       - name: ingestion_operations
         description: Ingestion operations count
@@ -192,8 +232,19 @@ models:
         description: Rows affected by operations
       - name: avg_operation_duration_seconds
         description: Average operation duration
+        meta:
+          metrics:
+            trend_avg_operation_duration:
+              type: average
+              label: "Trend Avg Operation Duration (sec)"
+              round: 1
       - name: total_operation_duration_seconds
         description: Total operation duration
+        meta:
+          metrics:
+            daily_total_operation_duration:
+              type: sum
+              label: "Total Operation Duration (sec)"
 
       # Computed metrics
       - name: avg_tasks_per_pipeline

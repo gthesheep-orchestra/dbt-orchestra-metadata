@@ -1,0 +1,52 @@
+name: Ops Trend Daily Failure Rates
+description: Daily pipeline, task, and operation failure rates.
+tableName: metrics_daily_summary
+metricQuery:
+  exploreName: metrics_daily_summary
+  dimensions:
+    - metrics_daily_summary_summary_date_day
+  metrics:
+    - metrics_daily_summary_avg_daily_pipeline_failure_rate
+    - metrics_daily_summary_avg_daily_task_failure_rate
+    - metrics_daily_summary_avg_daily_operation_failure_rate
+  filters:
+    dimensions: []
+  sorts:
+    - fieldId: metrics_daily_summary_summary_date_day
+      descending: false
+  limit: 500
+chartConfig:
+  type: cartesian
+  config:
+    layout:
+      xField: metrics_daily_summary_summary_date_day
+      yField:
+        - metrics_daily_summary_avg_daily_pipeline_failure_rate
+        - metrics_daily_summary_avg_daily_task_failure_rate
+        - metrics_daily_summary_avg_daily_operation_failure_rate
+    eChartsConfig:
+      series:
+        - type: line
+          encode:
+            xRef:
+              field: metrics_daily_summary_summary_date_day
+            yRef:
+              field: metrics_daily_summary_avg_daily_pipeline_failure_rate
+          isFilteredOut: false
+        - type: line
+          encode:
+            xRef:
+              field: metrics_daily_summary_summary_date_day
+            yRef:
+              field: metrics_daily_summary_avg_daily_task_failure_rate
+          isFilteredOut: false
+        - type: line
+          encode:
+            xRef:
+              field: metrics_daily_summary_summary_date_day
+            yRef:
+              field: metrics_daily_summary_avg_daily_operation_failure_rate
+          isFilteredOut: false
+slug: ops-trend-failure-rate
+spaceSlug: operations
+version: 1

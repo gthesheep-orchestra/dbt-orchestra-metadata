@@ -139,6 +139,11 @@ models:
         description: Number of successful task runs
       - name: failed_task_runs
         description: Number of failed task runs
+        meta:
+          metrics:
+            integration_failed_task_runs:
+              type: sum
+              label: "Integration Failed Task Runs"
       - name: task_success_rate_pct
         description: Success rate for tasks using this integration
         meta:
@@ -149,6 +154,12 @@ models:
               format: "percent"
       - name: avg_task_duration_seconds
         description: Average task duration for this integration
+        meta:
+          metrics:
+            integration_avg_task_duration_seconds:
+              type: average
+              label: "Integration Avg Task Duration (sec)"
+              round: 1
       - name: total_operations
         description: Total number of operations for this integration
         meta:
@@ -166,6 +177,12 @@ models:
               format: "0,0"
       - name: avg_operation_duration_seconds
         description: Average operation duration for this integration
+        meta:
+          metrics:
+            integration_avg_operation_duration_seconds:
+              type: average
+              label: "Integration Avg Operation Duration (sec)"
+              round: 1
       - name: updated_at
         description: Timestamp when this record was last updated
 

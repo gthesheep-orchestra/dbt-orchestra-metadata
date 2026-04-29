@@ -1,0 +1,17 @@
+name: Ops KPI Task Failure Rate
+description: Average daily task failure rate for the selected period.
+tableName: metrics_daily_summary
+metricQuery:
+  exploreName: metrics_daily_summary
+  dimensions: []
+  metrics:
+    - metrics_daily_summary_avg_daily_task_failure_rate
+  filters:
+    dimensions: []
+  sorts: []
+  limit: 500
+chartConfig:
+  type: big_number
+slug: ops-kpi-task-failure-rate
+spaceSlug: operations
+version: 1

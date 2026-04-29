@@ -1,0 +1,94 @@
+name: Orchestra Operations Health
+description: Operations dashboard for pipeline, task, and integration reliability.
+slug: orchestra-operations-health
+spaceSlug: operations
+version: 1
+tiles:
+  - type: markdown
+    x: 0
+    y: 0
+    h: 3
+    w: 36
+    tabUuid: null
+    tileSlug: ops-health-heading
+    properties:
+      title: Operations Health
+      hideTitle: false
+      content: |
+        Operations-focused reliability and throughput dashboard for Orchestra marts.
+  - type: saved_chart
+    x: 0
+    y: 3
+    h: 5
+    w: 9
+    tabUuid: null
+    tileSlug: ops-kpi-pipeline-runs
+    properties:
+      chartSlug: ops-kpi-pipeline-runs
+      hideTitle: false
+  - type: saved_chart
+    x: 9
+    y: 3
+    h: 5
+    w: 9
+    tabUuid: null
+    tileSlug: ops-kpi-task-failure-rate
+    properties:
+      chartSlug: ops-kpi-task-failure-rate
+      hideTitle: false
+  - type: saved_chart
+    x: 0
+    y: 8
+    h: 8
+    w: 18
+    tabUuid: null
+    tileSlug: ops-trend-daily-runs
+    properties:
+      chartSlug: ops-trend-daily-runs
+      hideTitle: false
+  - type: saved_chart
+    x: 18
+    y: 8
+    h: 8
+    w: 18
+    tabUuid: null
+    tileSlug: ops-trend-failure-rate
+    properties:
+      chartSlug: ops-trend-failure-rate
+      hideTitle: false
+  - type: saved_chart
+    x: 0
+    y: 16
+    h: 8
+    w: 18
+    tabUuid: null
+    tileSlug: ops-breakdown-failures-by-pipeline
+    properties:
+      chartSlug: ops-breakdown-failures-by-pipeline
+      hideTitle: false
+  - type: saved_chart
+    x: 18
+    y: 16
+    h: 8
+    w: 18
+    tabUuid: null
+    tileSlug: ops-breakdown-failures-by-integration
+    properties:
+      chartSlug: ops-breakdown-failures-by-integration
+      hideTitle: false
+tabs: []
+filters:
+  dimensions:
+    - operator: inThePast
+      target:
+        fieldId: metrics_daily_summary_summary_date_day
+        tableName: metrics_daily_summary
+      values:
+        - "30"
+      settings:
+        unitOfTime: days
+        completed: false
+      disabled: false
+      tileTargets: {}
+  metrics: []
+  tableCalculations: []
