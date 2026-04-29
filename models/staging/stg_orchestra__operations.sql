@@ -1,6 +1,23 @@
-with source as (
+with src as (
 
-    select * from {{ source('orchestra', 'operations') }}
+    select
+        upper(trim(operation_status)) as op_status_raw,
+        t.* except(operation_status)
+    from {{ source('orchestra', 'operations') }} as t
+
+),
+
+normalized as (
+
+    select
+        case
+            when op_status_raw in ('CANCELING', 'CANCELLING', 'CANCELED') then 'CANCELLED'
+            when op_status_raw in ('SUCCESS', 'COMPLETED', 'COMPLETE') then 'SUCCEEDED'
+            when op_status_raw in ('ERROR') then 'FAILED'
+            else op_status_raw
+        end as operation_status,
+        * except(op_status_raw)
+    from src
 
 ),
 
@@ -31,7 +48,7 @@ renamed as (
         operation_status = 'FAILED' as is_failed,
         operation_status = 'SKIPPED' as is_skipped,
         operation_status = 'WARNING' as has_warning,
-        operation_status in ('CANCELLED', 'CANCELING', 'CANCELLING') as is_cancelled,
+        operation_status = 'CANCELLED' as is_cancelled,
 
         -- operation type flags
         operation_type in ('INGESTION', 'SOURCE') as is_ingestion_operation,
@@ -43,7 +60,7 @@ renamed as (
         _dlt_load_id,
         _dlt_id
 
-    from source
+    from normalized
 
 )
 
