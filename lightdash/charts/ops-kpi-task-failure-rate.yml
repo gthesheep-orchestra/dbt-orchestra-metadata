@@ -1,19 +1,19 @@
 chartConfig:
   type: big_number
-description: Average daily task failure rate for the selected period.
+description: Total failed task runs for the selected period.
 metricQuery:
   dimensions: []
-  exploreName: metrics_daily_summary
+  exploreName: fct_task_runs
   filters:
     dimensions:
       and: []
   limit: 500
   metrics:
-    - metrics_daily_summary_avg_daily_task_failure_rate
+    - fct_task_runs_failed_task_runs
   sorts: []
   tableCalculations: []
 name: Ops KPI Task Failure Rate
 slug: ops-kpi-task-failure-rate
 spaceSlug: operations
-tableName: metrics_daily_summary
+tableName: fct_task_runs
 version: 1

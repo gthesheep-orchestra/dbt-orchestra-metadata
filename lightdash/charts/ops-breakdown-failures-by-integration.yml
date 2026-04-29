@@ -3,21 +3,21 @@ chartConfig:
 description: Failed task runs by integration and job.
 metricQuery:
   dimensions:
-    - dim_integrations_integration
-    - dim_integrations_integration_job
-  exploreName: dim_integrations
+    - fct_task_runs_integration
+    - fct_task_runs_integration_job
+  exploreName: fct_task_runs
   filters:
     dimensions:
       and: []
   limit: 20
   metrics:
-    - dim_integrations_integration_failed_task_runs
+    - fct_task_runs_failed_task_runs
   sorts:
-    - fieldId: dim_integrations_integration_failed_task_runs
+    - fieldId: fct_task_runs_failed_task_runs
       descending: true
   tableCalculations: []
 name: Ops Breakdown Failures by Integration
 slug: ops-breakdown-failures-by-integration
 spaceSlug: operations
-tableName: dim_integrations
+tableName: fct_task_runs
 version: 1

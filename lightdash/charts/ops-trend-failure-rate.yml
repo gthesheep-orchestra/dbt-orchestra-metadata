@@ -4,51 +4,42 @@ chartConfig:
       series:
         - encode:
             xRef:
-              field: metrics_daily_summary_summary_date_day
+              field: fct_pipeline_runs_created_date_day
             yRef:
-              field: metrics_daily_summary_avg_daily_pipeline_failure_rate
+              field: fct_pipeline_runs_failed_runs
           isFilteredOut: false
           type: line
         - encode:
             xRef:
-              field: metrics_daily_summary_summary_date_day
+              field: fct_pipeline_runs_created_date_day
             yRef:
-              field: metrics_daily_summary_avg_daily_task_failure_rate
-          isFilteredOut: false
-          type: line
-        - encode:
-            xRef:
-              field: metrics_daily_summary_summary_date_day
-            yRef:
-              field: metrics_daily_summary_avg_daily_operation_failure_rate
+              field: fct_pipeline_runs_warning_runs
           isFilteredOut: false
           type: line
     layout:
-      xField: metrics_daily_summary_summary_date_day
+      xField: fct_pipeline_runs_created_date_day
       yField:
-        - metrics_daily_summary_avg_daily_pipeline_failure_rate
-        - metrics_daily_summary_avg_daily_task_failure_rate
-        - metrics_daily_summary_avg_daily_operation_failure_rate
+        - fct_pipeline_runs_failed_runs
+        - fct_pipeline_runs_warning_runs
   type: cartesian
 description: Daily pipeline, task, and operation failure rates.
 metricQuery:
   dimensions:
-    - metrics_daily_summary_summary_date_day
-  exploreName: metrics_daily_summary
+    - fct_pipeline_runs_created_date_day
+  exploreName: fct_pipeline_runs
   filters:
     dimensions:
       and: []
   limit: 500
   metrics:
-    - metrics_daily_summary_avg_daily_pipeline_failure_rate
-    - metrics_daily_summary_avg_daily_task_failure_rate
-    - metrics_daily_summary_avg_daily_operation_failure_rate
+    - fct_pipeline_runs_failed_runs
+    - fct_pipeline_runs_warning_runs
   sorts:
-    - fieldId: metrics_daily_summary_summary_date_day
+    - fieldId: fct_pipeline_runs_created_date_day
       descending: false
   tableCalculations: []
 name: Ops Trend Daily Failure Rates
 slug: ops-trend-failure-rate
 spaceSlug: operations
-tableName: metrics_daily_summary
+tableName: fct_pipeline_runs
 version: 1
