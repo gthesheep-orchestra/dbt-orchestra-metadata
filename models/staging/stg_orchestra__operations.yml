@@ -1,0 +1,80 @@
+version: 2
+
+models:
+  - name: stg_orchestra__operations
+    description: |
+      Staged operation data from Orchestra.
+      Contains granular operation-level details including metrics
+      like rows affected and execution duration.
+    columns:
+      - name: operation_id
+        description: Unique identifier for the operation
+        data_tests:
+          - unique
+          - not_null
+      - name: task_run_id
+        description: ID of the parent task run
+        data_tests:
+          - relationships:
+              to: ref('stg_orchestra__task_runs')
+              field: task_run_id
+              config:
+                severity: warn
+      - name: external_id
+        description: External identifier from the integration
+      - name: operation_name
+        description: Name of the operation
+      - name: operation_status
+        description: Status of the operation
+        data_tests:
+          - accepted_values:
+              values:
+                - CREATED
+                - QUEUED
+                - RUNNING
+                - SUCCEEDED
+                - WARNING
+                - FAILED
+                - SKIPPED
+                - UNKNOWN
+                - CANCELLING
+                - CANCELLED
+      - name: operation_type
+        description: Type of operation performed
+        data_tests:
+          - accepted_values:
+              values: ['AGGREGATION', 'ANALYSIS', 'DEPLOY', 'INGESTION', 'ITERATOR', 'MATERIALISATION', 'OPERATION', 'QUERY', 'REVERSE_ETL', 'SEED', 'SNAPSHOT', 'SOURCE', 'TEST', 'TEST_GROUP', 'TRIGGER', 'UNKNOWN']
+      - name: integration
+        description: Integration that performed the operation
+      - name: integration_job
+        description: Specific job within the integration
+      - name: rows_affected
+        description: Number of rows affected
+      - name: duration_seconds
+        description: Operation duration in seconds
+      - name: created_at_utc
+        description: Timestamp when the operation was created
+        data_tests:
+          - not_null
+      - name: is_successful
+        description: Whether the operation succeeded
+      - name: is_failed
+        description: Whether the operation failed
+      - name: is_skipped
+        description: Whether the operation was skipped
+      - name: has_warning
+        description: Whether the operation had warnings
+      - name: is_cancelled
+        description: Whether the operation was cancelled
+      - name: is_ingestion_operation
+        description: Whether this is a data ingestion operation
+      - name: is_transformation_operation
+        description: Whether this is a transformation operation
+      - name: is_testing_operation
+        description: Whether this is a testing operation
+      - name: is_deployment_operation
+        description: Whether this is a deployment operation
+      - name: _dlt_load_id
+        description: dlt ingestion batch identifier
+      - name: _dlt_id
+        description: dlt unique row identifier
