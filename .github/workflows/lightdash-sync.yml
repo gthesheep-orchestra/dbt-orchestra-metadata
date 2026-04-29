@@ -1,0 +1,43 @@
+name: Sync Lightdash Content
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lightdash-sync-main
+  cancel-in-progress: true
+
+jobs:
+  sync-lightdash:
+    runs-on: ubuntu-latest
+    env:
+      LIGHTDASH_URL: ${{ secrets.LIGHTDASH_URL }}
+      LIGHTDASH_API_KEY: ${{ secrets.LIGHTDASH_API_KEY }}
+      LIGHTDASH_PROJECT: ${{ secrets.LIGHTDASH_PROJECT_UUID }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install Lightdash CLI
+        run: npm install -g @lightdash/cli
+
+      - name: Authenticate with Lightdash
+        run: |
+          lightdash login "$LIGHTDASH_URL" \
+            --token "$LIGHTDASH_API_KEY" \
+            --project "$LIGHTDASH_PROJECT" \
+            --non-interactive
+
+      - name: Upload charts and dashboards
+        working-directory: lightdash
+        run: lightdash upload --force

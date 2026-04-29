@@ -23,6 +23,16 @@ uv run sqlfluff lint models
 uv lock
 ```
 
+## Optional: dbt Project Evaluator
+
+This project includes [`dbt_project_evaluator`](https://hub.getdbt.com/dbt-labs/dbt_project_evaluator/latest/) as an optional package, but it is disabled by default.
+
+To run it intentionally, enable it for the command and select only evaluator resources:
+
+```bash
+uv run dbt build --vars '{"run_dbt_project_evaluator": true}' --select dbt_project_evaluator
+```
+
 ## Overview
 
 This dbt package transforms Orchestra platform metadata into an analytics-ready dimensional model. It processes execution metadata from Orchestra's REST API to provide insights into pipeline orchestration, data operations, and asset lineage.

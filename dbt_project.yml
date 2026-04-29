@@ -20,6 +20,8 @@ vars:
   orchestra_source_schema: 'orchestra'
   # Identifier prefix for dlt-loaded tables
   orchestra_source_database: null  # Set to your database if using multi-db
+  # Keep dbt_project_evaluator off unless explicitly enabled in a command.
+  run_dbt_project_evaluator: false
 
 models:
   orchestra_metadata:
@@ -35,3 +37,6 @@ models:
       facts:
         +materialized: incremental
         +on_schema_change: append_new_columns
+
+  dbt_project_evaluator:
+    +enabled: "{{ var('run_dbt_project_evaluator', false) }}"
