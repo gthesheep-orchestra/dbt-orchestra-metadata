@@ -3,9 +3,9 @@ chartConfig:
 description: Total pipeline runs for the selected date range.
 metricQuery:
   dimensions: []
-  exploreName: metrics_daily_summary
+  exploreName: fct_pipeline_runs
   metrics:
-  - metrics_daily_summary_daily_pipeline_runs
+    - fct_pipeline_runs_pipeline_runs_count
   filters:
     dimensions:
       and: []
@@ -15,5 +15,5 @@ metricQuery:
 name: Ops KPI Pipeline Runs
 slug: ops-kpi-pipeline-runs
 spaceSlug: operations
-tableName: metrics_daily_summary
+tableName: fct_pipeline_runs
 version: 1
