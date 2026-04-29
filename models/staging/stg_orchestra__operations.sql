@@ -4,6 +4,21 @@ with source as (
 
 ),
 
+{% if execute %}
+    {% set source_columns = adapter.get_columns_in_relation(source('orchestra', 'operations')) %}
+    {% set source_column_names = source_columns | map(attribute='name') | map('lower') | list %}
+{% else %}
+    {% set source_column_names = [] %}
+{% endif %}
+
+{% if 'created_at' in source_column_names %}
+    {% set created_at_expr = 'created_at' %}
+{% elif 'inserted_at' in source_column_names %}
+    {% set created_at_expr = 'inserted_at' %}
+{% else %}
+    {% set created_at_expr = 'null' %}
+{% endif %}
+
 renamed as (
 
     select
@@ -24,7 +39,7 @@ renamed as (
         operation_duration as duration_seconds,
 
         -- timestamps
-        created_at as created_at_utc,
+        {{ created_at_expr }} as created_at_utc,
 
         -- status flags
         operation_status = 'SUCCEEDED' as is_successful,
