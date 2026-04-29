@@ -10,7 +10,7 @@
 {% endmacro %}
 
 {% macro bigquery__most_common_value(expression) %}
-    (approx_top_count({{ expression }}, 1)[offset(0)]).value
+    (approx_top_count({{ expression }}, 1)[safe_offset(0)]).value
 {% endmacro %}
 
 {% macro duckdb__most_common_value(expression) %}
