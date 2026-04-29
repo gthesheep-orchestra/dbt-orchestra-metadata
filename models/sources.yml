@@ -132,6 +132,7 @@ sources:
             data_tests:
               - accepted_values:
                   values: ['CREATED', 'QUEUED', 'RUNNING', 'SUCCEEDED', 'WARNING', 'FAILED', 'SKIPPED', 'UNKNOWN', 'CANCELLING', 'CANCELING', 'CANCELLED']
+                  severity: warn
           - name: operation_type
             description: |
               Type of operation performed.
