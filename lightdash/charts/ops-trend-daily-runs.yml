@@ -1,34 +1,36 @@
-name: Ops Trend Daily Pipeline Runs
-description: Daily pipeline run volume.
-tableName: metrics_daily_summary
-metricQuery:
-  exploreName: metrics_daily_summary
-  dimensions:
-    - metrics_daily_summary_summary_date_day
-  metrics:
-    - metrics_daily_summary_daily_pipeline_runs
-  filters:
-    dimensions: []
-  sorts:
-    - fieldId: metrics_daily_summary_summary_date_day
-      descending: false
-  limit: 500
 chartConfig:
-  type: cartesian
   config:
-    layout:
-      xField: metrics_daily_summary_summary_date_day
-      yField:
-        - metrics_daily_summary_daily_pipeline_runs
     eChartsConfig:
       series:
-        - type: line
-          encode:
+        - encode:
             xRef:
               field: metrics_daily_summary_summary_date_day
             yRef:
               field: metrics_daily_summary_daily_pipeline_runs
           isFilteredOut: false
+          type: line
+    layout:
+      xField: metrics_daily_summary_summary_date_day
+      yField:
+        - metrics_daily_summary_daily_pipeline_runs
+  type: cartesian
+description: Daily pipeline run volume.
+metricQuery:
+  dimensions:
+    - metrics_daily_summary_summary_date_day
+  exploreName: metrics_daily_summary
+  filters:
+    dimensions:
+      and: []
+  limit: 500
+  metrics:
+    - metrics_daily_summary_daily_pipeline_runs
+  sorts:
+    - fieldId: metrics_daily_summary_summary_date_day
+      descending: false
+  tableCalculations: []
+name: Ops Trend Daily Pipeline Runs
 slug: ops-trend-daily-runs
 spaceSlug: operations
+tableName: metrics_daily_summary
 version: 1

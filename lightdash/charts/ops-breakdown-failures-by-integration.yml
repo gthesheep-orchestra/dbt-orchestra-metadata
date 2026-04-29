@@ -1,21 +1,23 @@
-name: Ops Breakdown Failures by Integration
+chartConfig:
+  type: table
 description: Failed task runs by integration and job.
-tableName: dim_integrations
 metricQuery:
-  exploreName: dim_integrations
   dimensions:
     - dim_integrations_integration
     - dim_integrations_integration_job
+  exploreName: dim_integrations
+  filters:
+    dimensions:
+      and: []
+  limit: 20
   metrics:
     - dim_integrations_integration_failed_task_runs
-  filters:
-    dimensions: []
   sorts:
     - fieldId: dim_integrations_integration_failed_task_runs
       descending: true
-  limit: 20
-chartConfig:
-  type: table
+  tableCalculations: []
+name: Ops Breakdown Failures by Integration
 slug: ops-breakdown-failures-by-integration
 spaceSlug: operations
+tableName: dim_integrations
 version: 1

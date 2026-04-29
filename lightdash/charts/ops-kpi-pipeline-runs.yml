@@ -1,17 +1,19 @@
-name: Ops KPI Pipeline Runs
-description: Total pipeline runs for the selected date range.
-tableName: metrics_daily_summary
-metricQuery:
-  exploreName: metrics_daily_summary
-  dimensions: []
-  metrics:
-    - metrics_daily_summary_daily_pipeline_runs
-  filters:
-    dimensions: []
-  sorts: []
-  limit: 500
 chartConfig:
   type: big_number
+description: Total pipeline runs for the selected date range.
+metricQuery:
+  dimensions: []
+  exploreName: metrics_daily_summary
+  metrics:
+  - metrics_daily_summary_daily_pipeline_runs
+  filters:
+    dimensions:
+      and: []
+  limit: 500
+  sorts: []
+  tableCalculations: []
+name: Ops KPI Pipeline Runs
 slug: ops-kpi-pipeline-runs
 spaceSlug: operations
+tableName: metrics_daily_summary
 version: 1

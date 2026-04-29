@@ -1,52 +1,54 @@
-name: Ops Trend Daily Failure Rates
-description: Daily pipeline, task, and operation failure rates.
-tableName: metrics_daily_summary
-metricQuery:
-  exploreName: metrics_daily_summary
-  dimensions:
-    - metrics_daily_summary_summary_date_day
-  metrics:
-    - metrics_daily_summary_avg_daily_pipeline_failure_rate
-    - metrics_daily_summary_avg_daily_task_failure_rate
-    - metrics_daily_summary_avg_daily_operation_failure_rate
-  filters:
-    dimensions: []
-  sorts:
-    - fieldId: metrics_daily_summary_summary_date_day
-      descending: false
-  limit: 500
 chartConfig:
-  type: cartesian
   config:
+    eChartsConfig:
+      series:
+        - encode:
+            xRef:
+              field: metrics_daily_summary_summary_date_day
+            yRef:
+              field: metrics_daily_summary_avg_daily_pipeline_failure_rate
+          isFilteredOut: false
+          type: line
+        - encode:
+            xRef:
+              field: metrics_daily_summary_summary_date_day
+            yRef:
+              field: metrics_daily_summary_avg_daily_task_failure_rate
+          isFilteredOut: false
+          type: line
+        - encode:
+            xRef:
+              field: metrics_daily_summary_summary_date_day
+            yRef:
+              field: metrics_daily_summary_avg_daily_operation_failure_rate
+          isFilteredOut: false
+          type: line
     layout:
       xField: metrics_daily_summary_summary_date_day
       yField:
         - metrics_daily_summary_avg_daily_pipeline_failure_rate
         - metrics_daily_summary_avg_daily_task_failure_rate
         - metrics_daily_summary_avg_daily_operation_failure_rate
-    eChartsConfig:
-      series:
-        - type: line
-          encode:
-            xRef:
-              field: metrics_daily_summary_summary_date_day
-            yRef:
-              field: metrics_daily_summary_avg_daily_pipeline_failure_rate
-          isFilteredOut: false
-        - type: line
-          encode:
-            xRef:
-              field: metrics_daily_summary_summary_date_day
-            yRef:
-              field: metrics_daily_summary_avg_daily_task_failure_rate
-          isFilteredOut: false
-        - type: line
-          encode:
-            xRef:
-              field: metrics_daily_summary_summary_date_day
-            yRef:
-              field: metrics_daily_summary_avg_daily_operation_failure_rate
-          isFilteredOut: false
+  type: cartesian
+description: Daily pipeline, task, and operation failure rates.
+metricQuery:
+  dimensions:
+    - metrics_daily_summary_summary_date_day
+  exploreName: metrics_daily_summary
+  filters:
+    dimensions:
+      and: []
+  limit: 500
+  metrics:
+    - metrics_daily_summary_avg_daily_pipeline_failure_rate
+    - metrics_daily_summary_avg_daily_task_failure_rate
+    - metrics_daily_summary_avg_daily_operation_failure_rate
+  sorts:
+    - fieldId: metrics_daily_summary_summary_date_day
+      descending: false
+  tableCalculations: []
+name: Ops Trend Daily Failure Rates
 slug: ops-trend-failure-rate
 spaceSlug: operations
+tableName: metrics_daily_summary
 version: 1

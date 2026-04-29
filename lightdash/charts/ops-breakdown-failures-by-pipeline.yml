@@ -1,34 +1,36 @@
-name: Ops Breakdown Failures by Pipeline
-description: Failed pipeline runs by pipeline name.
-tableName: fct_pipeline_runs
-metricQuery:
-  exploreName: fct_pipeline_runs
-  dimensions:
-    - fct_pipeline_runs_pipeline_name
-  metrics:
-    - fct_pipeline_runs_failed_runs
-  filters:
-    dimensions: []
-  sorts:
-    - fieldId: fct_pipeline_runs_failed_runs
-      descending: true
-  limit: 20
 chartConfig:
-  type: cartesian
   config:
-    layout:
-      xField: fct_pipeline_runs_pipeline_name
-      yField:
-        - fct_pipeline_runs_failed_runs
     eChartsConfig:
       series:
-        - type: bar
-          encode:
+        - encode:
             xRef:
               field: fct_pipeline_runs_pipeline_name
             yRef:
               field: fct_pipeline_runs_failed_runs
           isFilteredOut: false
+          type: bar
+    layout:
+      xField: fct_pipeline_runs_pipeline_name
+      yField:
+        - fct_pipeline_runs_failed_runs
+  type: cartesian
+description: Failed pipeline runs by pipeline name.
+metricQuery:
+  dimensions:
+    - fct_pipeline_runs_pipeline_name
+  exploreName: fct_pipeline_runs
+  filters:
+    dimensions:
+      and: []
+  limit: 20
+  metrics:
+    - fct_pipeline_runs_failed_runs
+  sorts:
+    - fieldId: fct_pipeline_runs_failed_runs
+      descending: true
+  tableCalculations: []
+name: Ops Breakdown Failures by Pipeline
 slug: ops-breakdown-failures-by-pipeline
 spaceSlug: operations
+tableName: fct_pipeline_runs
 version: 1
