@@ -39,5 +39,4 @@ jobs:
             --non-interactive
 
       - name: Upload charts and dashboards
-        working-directory: lightdash
         run: lightdash upload --force
