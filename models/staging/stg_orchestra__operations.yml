@@ -1,0 +1,71 @@
+version: 2
+
+models:
+  - name: stg_orchestra__operations
+    description: |
+      Staged operations from the Orchestra API `/operations` endpoint.
+      Raw operation_type values are normalised to the canonical enumerated set;
+      any unrecognised value is mapped to UNKNOWN before tests are applied.
+    columns:
+      - name: operation_id
+        description: Unique identifier for the operation (sourced from id)
+        data_tests:
+          - unique
+          - not_null
+      - name: task_run_id
+        description: ID of the parent task run (UUID4)
+        data_tests:
+          - not_null
+      - name: external_id
+        description: External identifier from the integration
+      - name: operation_name
+        description: Name of the operation
+      - name: operation_status
+        description: |
+          Status of the operation.
+          Valid values: CREATED, QUEUED, RUNNING, SUCCEEDED, WARNING, FAILED, SKIPPED, UNKNOWN, CANCELLING, CANCELING, CANCELLED
+        data_tests:
+          - accepted_values:
+              values: ['CREATED', 'QUEUED', 'RUNNING', 'SUCCEEDED', 'WARNING', 'FAILED', 'SKIPPED', 'UNKNOWN', 'CANCELLING', 'CANCELING', 'CANCELLED']
+      - name: operation_type
+        description: |
+          Normalised type of operation performed.
+          Any raw value not in the canonical list is mapped to UNKNOWN.
+          Valid values: AGGREGATION, ANALYSIS, DEPLOY, INGESTION, ITERATOR,
+          MATERIALISATION, OPERATION, QUERY, REVERSE_ETL, SEED, SNAPSHOT,
+          SOURCE, TEST, TEST_GROUP, TRIGGER, UNKNOWN
+        data_tests:
+          - accepted_values:
+              values: ['AGGREGATION', 'ANALYSIS', 'DEPLOY', 'INGESTION', 'ITERATOR', 'MATERIALISATION', 'OPERATION', 'QUERY', 'REVERSE_ETL', 'SEED', 'SNAPSHOT', 'SOURCE', 'TEST', 'TEST_GROUP', 'TRIGGER', 'UNKNOWN']
+      - name: integration
+        description: Integration type that performed the operation
+      - name: integration_job
+        description: Specific job within the integration
+      - name: rows_affected
+        description: Number of rows affected by the operation
+      - name: duration_seconds
+        description: Duration of the operation in seconds
+      - name: created_at_utc
+        description: Timestamp when the operation was created (UTC)
+      - name: is_successful
+        description: True when operation_status is SUCCEEDED
+      - name: is_failed
+        description: True when operation_status is FAILED
+      - name: is_skipped
+        description: True when operation_status is SKIPPED
+      - name: has_warning
+        description: True when operation_status is WARNING
+      - name: is_cancelled
+        description: True when operation_status is CANCELLED, CANCELING, or CANCELLING
+      - name: is_ingestion_operation
+        description: True for INGESTION or SOURCE operation types
+      - name: is_transformation_operation
+        description: True for MATERIALISATION, QUERY, or AGGREGATION operation types
+      - name: is_testing_operation
+        description: True for TEST, TEST_GROUP, or ANALYSIS operation types
+      - name: is_deployment_operation
+        description: True for DEPLOY, SNAPSHOT, or SEED operation types
+      - name: _dlt_load_id
+        description: dlt load identifier for tracking ingestion batches
+      - name: _dlt_id
+        description: dlt unique row identifier

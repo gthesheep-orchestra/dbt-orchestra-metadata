@@ -30,7 +30,16 @@ renamed as (
         -- attributes
         operation_name,
         operation_status,
-        operation_type,
+        -- Normalise raw operation_type to the canonical enumerated set;
+        -- any unrecognised value is mapped to UNKNOWN.
+        case
+            when upper(trim(operation_type)) in (
+                'AGGREGATION', 'ANALYSIS', 'DEPLOY', 'INGESTION', 'ITERATOR',
+                'MATERIALISATION', 'OPERATION', 'QUERY', 'REVERSE_ETL', 'SEED',
+                'SNAPSHOT', 'SOURCE', 'TEST', 'TEST_GROUP', 'TRIGGER', 'UNKNOWN'
+            ) then upper(trim(operation_type))
+            else 'UNKNOWN'
+        end as operation_type,
         integration,
         integration_job,
 
