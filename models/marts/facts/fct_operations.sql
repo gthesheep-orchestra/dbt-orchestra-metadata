@@ -22,20 +22,13 @@ task_context as (
     select
         task_run_id,
         pipeline_run_id,
-        task_name
-    from {{ ref('stg_orchestra__task_runs') }}
-
-),
-
-pipeline_context as (
-
-    select
-        pipeline_run_id,
         pipeline_id,
+        task_name,
         pipeline_name,
         git_branch,
         git_commit_sha
-    from {{ ref('stg_orchestra__pipeline_runs') }}
+
+    from {{ ref('fct_task_runs') }}
 
 ),
 
@@ -46,7 +39,7 @@ final as (
         o.operation_id,
         o.task_run_id,
         tc.pipeline_run_id,
-        pc.pipeline_id,
+        tc.pipeline_id,
         o.external_id,
 
         -- integration key for joining to dim_integrations
@@ -61,9 +54,9 @@ final as (
 
         -- context from parent entities
         tc.task_name,
-        pc.pipeline_name,
-        pc.git_branch,
-        pc.git_commit_sha,
+        tc.pipeline_name,
+        tc.git_branch,
+        tc.git_commit_sha,
 
         -- timestamps
         o.created_at_utc,
@@ -101,7 +94,6 @@ final as (
 
     from operations as o
     left join task_context as tc on o.task_run_id = tc.task_run_id
-    left join pipeline_context as pc on tc.pipeline_run_id = pc.pipeline_run_id
 
 )
 
