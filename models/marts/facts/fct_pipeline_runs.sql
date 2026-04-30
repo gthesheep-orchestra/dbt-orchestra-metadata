@@ -19,23 +19,11 @@ with pipeline_runs as (
 
 task_run_stats as (
 
-    select
-        pipeline_run_id,
-        count(*) as total_tasks,
-        sum(case when is_successful then 1 else 0 end) as successful_tasks,
-        sum(case when is_failed then 1 else 0 end) as failed_tasks,
-        sum(case when is_skipped then 1 else 0 end) as skipped_tasks,
-        sum(case when has_warning then 1 else 0 end) as warning_tasks,
-        sum(duration_seconds) as total_task_duration_seconds,
-        count(distinct integration) as unique_integrations
-
-    from {{ ref('stg_orchestra__task_runs') }}
+    select * from {{ ref('int_task_run_stats_per_pipeline') }}
 
     {% if is_incremental() %}
     where pipeline_run_id in (select pipeline_run_id from pipeline_runs)
     {% endif %}
-
-    group by 1
 
 ),
 

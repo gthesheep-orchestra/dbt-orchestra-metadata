@@ -1,0 +1,29 @@
+version: 2
+
+models:
+  - name: int_task_run_stats_per_pipeline
+    description: |
+      Intermediate model that pre-aggregates task run statistics per pipeline run.
+      Used by fct_pipeline_runs to enrich pipeline records with task counts and
+      aggregate metrics without requiring fct_pipeline_runs to depend directly on
+      stg_orchestra__task_runs.
+    columns:
+      - name: pipeline_run_id
+        description: Identifier of the parent pipeline run
+        data_tests:
+          - unique
+          - not_null
+      - name: total_tasks
+        description: Total number of task runs for this pipeline run
+      - name: successful_tasks
+        description: Number of task runs that succeeded
+      - name: failed_tasks
+        description: Number of task runs that failed
+      - name: skipped_tasks
+        description: Number of task runs that were skipped
+      - name: warning_tasks
+        description: Number of task runs that completed with warnings
+      - name: total_task_duration_seconds
+        description: Sum of all task run durations in seconds
+      - name: unique_integrations
+        description: Number of distinct integrations used across all tasks

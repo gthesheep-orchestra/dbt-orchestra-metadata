@@ -26,6 +26,9 @@ vars:
 models:
   orchestra_metadata:
     +materialized: view
+    intermediate:
+      +materialized: view
+      +schema: intermediate
     staging:
       +materialized: view
       +schema: staging
