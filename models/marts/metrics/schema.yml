@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: metrics_daily_summary
+  - name: fct_daily_metrics
     description: |
       Daily aggregated metrics for Orchestra pipeline, task, and operation activity.
       Provides a summary view for dashboarding and trend analysis.

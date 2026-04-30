@@ -4,33 +4,33 @@ chartConfig:
       series:
         - encode:
             xRef:
-              field: metrics_daily_summary_summary_date_day
+              field: fct_daily_metrics_summary_date_day
             yRef:
-              field: metrics_daily_summary_daily_pipeline_runs
+              field: fct_daily_metrics_daily_pipeline_runs
           isFilteredOut: false
           type: line
     layout:
-      xField: metrics_daily_summary_summary_date_day
+      xField: fct_daily_metrics_summary_date_day
       yField:
-        - metrics_daily_summary_daily_pipeline_runs
+        - fct_daily_metrics_daily_pipeline_runs
   type: cartesian
 description: Daily pipeline run volume.
 metricQuery:
   dimensions:
-    - metrics_daily_summary_summary_date_day
-  exploreName: metrics_daily_summary
+    - fct_daily_metrics_summary_date_day
+  exploreName: fct_daily_metrics
   filters:
     dimensions:
       and: []
   limit: 500
   metrics:
-    - metrics_daily_summary_daily_pipeline_runs
+    - fct_daily_metrics_daily_pipeline_runs
   sorts:
-    - fieldId: metrics_daily_summary_summary_date_day
+    - fieldId: fct_daily_metrics_summary_date_day
       descending: false
   tableCalculations: []
 name: Ops Trend Daily Pipeline Runs
 slug: ops-trend-daily-runs
 spaceSlug: operations
-tableName: metrics_daily_summary
+tableName: fct_daily_metrics
 version: 1
