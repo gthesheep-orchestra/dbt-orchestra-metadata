@@ -34,3 +34,25 @@ macros:
       - name: expression
         type: string
         description: SQL expression to aggregate.
+
+  - name: get_run_status_color
+    description: >
+      Returns a color string corresponding to a run status value.
+      Useful for conditional formatting in BI tools that support
+      color-coded status fields.
+    arguments:
+      - name: status_column
+        type: string
+        description: >
+          SQL expression or column reference containing a run/task/operation
+          status value (e.g. SUCCEEDED, FAILED, WARNING, RUNNING, etc.).
+
+  - name: json_array_length
+    description: >
+      Returns the number of elements in a JSON array column using
+      adapter-specific SQL. Supports BigQuery, Snowflake, Redshift,
+      PostgreSQL, DuckDB, and Databricks.
+    arguments:
+      - name: column_name
+        type: string
+        description: SQL expression referencing the JSON array column.
