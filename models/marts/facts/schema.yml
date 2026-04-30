@@ -826,3 +826,261 @@ models:
         description: dlt ingestion batch identifier
       - name: _dlt_id
         description: dlt unique row identifier
+
+  - name: fct_daily_summary
+    description: |
+      Daily aggregated metrics for Orchestra pipeline, task, and operation activity.
+      Provides a summary view for dashboarding and trend analysis.
+      Incrementally updated with 1-day lookback.
+      Renamed from metrics_daily_summary to follow fct_ naming convention.
+    meta:
+      label: "Daily Summary"
+      group: "Orchestra Metadata"
+    columns:
+      - name: summary_date
+        description: The date of the summary
+        data_tests:
+          - unique
+          - not_null
+        meta:
+          dimension:
+            type: date
+            label: "Date"
+            time_intervals: ['DAY', 'WEEK', 'MONTH', 'QUARTER', 'YEAR']
+
+      # Pipeline metrics
+      - name: pipeline_runs
+        description: Total pipeline runs on this date
+        meta:
+          metrics:
+            daily_pipeline_runs:
+              type: sum
+              label: "Pipeline Runs"
+      - name: successful_pipeline_runs
+        description: Successful pipeline runs
+        meta:
+          metrics:
+            daily_successful_pipeline_runs:
+              type: sum
+              label: "Successful Pipeline Runs"
+      - name: failed_pipeline_runs
+        description: Failed pipeline runs
+        meta:
+          metrics:
+            daily_failed_pipeline_runs:
+              type: sum
+              label: "Failed Pipeline Runs"
+      - name: warning_pipeline_runs
+        description: Pipeline runs with warnings
+      - name: cancelled_pipeline_runs
+        description: Cancelled pipeline runs
+      - name: pipeline_success_rate_pct
+        description: Pipeline success rate percentage
+        meta:
+          metrics:
+            avg_daily_pipeline_success_rate:
+              type: average
+              label: "Avg Pipeline Success Rate %"
+              format: "percent"
+      - name: pipeline_failure_rate_pct
+        description: Pipeline failure rate percentage
+        meta:
+          metrics:
+            avg_daily_pipeline_failure_rate:
+              type: average
+              label: "Avg Pipeline Failure Rate %"
+              format: "percent"
+      - name: avg_pipeline_duration_seconds
+        description: Average pipeline duration in seconds
+        meta:
+          metrics:
+            trend_avg_pipeline_duration:
+              type: average
+              label: "Trend Avg Pipeline Duration (sec)"
+              round: 1
+      - name: max_pipeline_duration_seconds
+        description: Maximum pipeline duration
+        meta:
+          metrics:
+            trend_max_pipeline_duration:
+              type: max
+              label: "Trend Max Pipeline Duration (sec)"
+              round: 1
+      - name: total_pipeline_duration_seconds
+        description: Total pipeline duration
+        meta:
+          metrics:
+            daily_total_pipeline_duration:
+              type: sum
+              label: "Total Pipeline Duration (sec)"
+      - name: unique_pipelines_run
+        description: Number of unique pipelines that ran
+        meta:
+          metrics:
+            daily_unique_pipelines:
+              type: sum
+              label: "Unique Pipelines Run"
+      - name: unique_triggers
+        description: Number of unique triggers
+
+      # Task metrics
+      - name: task_runs
+        description: Total task runs on this date
+        meta:
+          metrics:
+            daily_task_runs:
+              type: sum
+              label: "Task Runs"
+      - name: successful_task_runs
+        description: Successful task runs
+        meta:
+          metrics:
+            daily_successful_task_runs:
+              type: sum
+              label: "Successful Task Runs"
+      - name: failed_task_runs
+        description: Failed task runs
+        meta:
+          metrics:
+            daily_failed_task_runs:
+              type: sum
+              label: "Failed Task Runs"
+      - name: skipped_task_runs
+        description: Skipped task runs
+      - name: task_success_rate_pct
+        description: Task success rate percentage
+        meta:
+          metrics:
+            avg_daily_task_success_rate:
+              type: average
+              label: "Avg Task Success Rate %"
+              format: "percent"
+      - name: task_failure_rate_pct
+        description: Task failure rate percentage
+        meta:
+          metrics:
+            avg_daily_task_failure_rate:
+              type: average
+              label: "Avg Task Failure Rate %"
+              format: "percent"
+      - name: avg_task_duration_seconds
+        description: Average task duration in seconds
+        meta:
+          metrics:
+            trend_avg_task_duration:
+              type: average
+              label: "Trend Avg Task Duration (sec)"
+              round: 1
+      - name: total_task_duration_seconds
+        description: Total task duration
+      - name: unique_integrations
+        description: Number of unique integrations used
+        meta:
+          metrics:
+            daily_unique_integrations:
+              type: max
+              label: "Unique Integrations"
+      - name: total_rows_affected
+        description: Total rows affected by tasks
+        meta:
+          metrics:
+            daily_rows_affected:
+              type: sum
+              label: "Rows Affected"
+              format: "0,0"
+
+      # Operation metrics
+      - name: total_operations
+        description: Total operations on this date
+        meta:
+          metrics:
+            daily_operations:
+              type: sum
+              label: "Operations"
+      - name: successful_operations
+        description: Successful operations
+        meta:
+          metrics:
+            daily_successful_operations:
+              type: sum
+              label: "Successful Operations"
+      - name: failed_operations
+        description: Failed operations
+        meta:
+          metrics:
+            daily_failed_operations:
+              type: sum
+              label: "Failed Operations"
+      - name: operation_success_rate_pct
+        description: Operation success rate percentage
+        meta:
+          metrics:
+            avg_daily_operation_success_rate:
+              type: average
+              label: "Avg Operation Success Rate %"
+              format: "percent"
+      - name: operation_failure_rate_pct
+        description: Operation failure rate percentage
+        meta:
+          metrics:
+            avg_daily_operation_failure_rate:
+              type: average
+              label: "Avg Operation Failure Rate %"
+              format: "percent"
+      - name: ingestion_operations
+        description: Ingestion operations count
+        meta:
+          metrics:
+            daily_ingestion_operations:
+              type: sum
+              label: "Ingestion Operations"
+      - name: transformation_operations
+        description: Transformation operations count
+        meta:
+          metrics:
+            daily_transformation_operations:
+              type: sum
+              label: "Transformation Operations"
+      - name: testing_operations
+        description: Testing operations count
+        meta:
+          metrics:
+            daily_testing_operations:
+              type: sum
+              label: "Testing Operations"
+      - name: deployment_operations
+        description: Deployment operations count
+        meta:
+          metrics:
+            daily_deployment_operations:
+              type: sum
+              label: "Deployment Operations"
+      - name: operation_rows_affected
+        description: Rows affected by operations
+      - name: avg_operation_duration_seconds
+        description: Average operation duration
+        meta:
+          metrics:
+            trend_avg_operation_duration:
+              type: average
+              label: "Trend Avg Operation Duration (sec)"
+              round: 1
+      - name: total_operation_duration_seconds
+        description: Total operation duration
+        meta:
+          metrics:
+            daily_total_operation_duration:
+              type: sum
+              label: "Total Operation Duration (sec)"
+
+      # Computed metrics
+      - name: avg_tasks_per_pipeline
+        description: Average number of tasks per pipeline run
+        meta:
+          metrics:
+            trend_tasks_per_pipeline:
+              type: average
+              label: "Avg Tasks per Pipeline"
+              round: 1
+      - name: updated_at
+        description: Timestamp of last update
