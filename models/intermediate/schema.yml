@@ -1,0 +1,28 @@
+version: 2
+
+models:
+  - name: int_orchestra__pipeline_context
+    description: |
+      Intermediate model providing pipeline context fields (pipeline_id, pipeline_name,
+      git_branch, git_commit_sha) keyed by pipeline_run_id.
+
+      This intermediate model reduces the fanout from stg_orchestra__pipeline_runs
+      by providing a single reference point for downstream fact tables
+      (fct_task_runs, fct_operations) that need pipeline context without
+      pulling the full staging model.
+    columns:
+      - name: pipeline_run_id
+        description: Unique identifier for the pipeline run
+        data_tests:
+          - unique
+          - not_null
+      - name: pipeline_id
+        description: Identifier of the pipeline definition
+        data_tests:
+          - not_null
+      - name: pipeline_name
+        description: Human-readable name of the pipeline
+      - name: git_branch
+        description: Git branch the pipeline ran from
+      - name: git_commit_sha
+        description: Git commit SHA the pipeline ran from

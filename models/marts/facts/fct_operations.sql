@@ -35,7 +35,7 @@ pipeline_context as (
         pipeline_name,
         git_branch,
         git_commit_sha
-    from {{ ref('stg_orchestra__pipeline_runs') }}
+    from {{ ref('int_orchestra__pipeline_context') }}
 
 ),
 
