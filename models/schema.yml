@@ -128,10 +128,10 @@ sources:
           - name: operation_status
             description: |
               Status of the operation.
-              Valid values: CREATED, QUEUED, RUNNING, SUCCEEDED, WARNING, FAILED, SKIPPED, UNKNOWN, CANCELLING, CANCELING, CANCELLED
+              Valid values: CREATED, QUEUED, RUNNING, SUCCEEDED, WARNING, FAILED, SKIPPED, UNKNOWN, CANCELLING, CANCELING, CANCELED, CANCELLED
             data_tests:
               - accepted_values:
-                  values: ['CREATED', 'QUEUED', 'RUNNING', 'SUCCEEDED', 'WARNING', 'FAILED', 'SKIPPED', 'UNKNOWN', 'CANCELLING', 'CANCELING', 'CANCELLED']
+                  values: ['CREATED', 'QUEUED', 'RUNNING', 'SUCCEEDED', 'WARNING', 'FAILED', 'SKIPPED', 'UNKNOWN', 'CANCELLING', 'CANCELING', 'CANCELED', 'CANCELLED']
           - name: operation_type
             description: |
               Type of operation performed.
