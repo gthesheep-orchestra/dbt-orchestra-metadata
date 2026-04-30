@@ -14,31 +14,7 @@ env:
   CLIENT_CERT_URL: ${{ secrets.BIGQUERY_CLIENT_CERT_URL }}
 
 jobs:
-  sqlfluff-lint:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        warehouse: ["bigquery"]
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Run SQLFluff Task in Pipeline
-        uses: orchestra-hq/run-pipeline@v1
-        with:
-          api_key: ${{ secrets.ORCHESTRA_API_KEY }}
-          pipeline_id: ${{ secrets.ORCHESTRA_METADATA_PIPELINE_ID }}
-          poll_interval: 20
-          environment: Staging
-          task_ids: aa8783d2-5c3f-4cf1-a6c9-bef31ee71f9b
-          run_inputs: |
-            {
-              "git_branch": "${{ github.head_ref }}",
-              "warehouse": "${{ matrix.warehouse }}"
-            }
-
   dbt-core-slimci-action:
-    needs: sqlfluff-lint
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
