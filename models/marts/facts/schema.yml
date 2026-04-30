@@ -652,7 +652,7 @@ models:
         description: Type of operation performed
         data_tests:
           - accepted_values:
-              values: ['AGGREGATION', 'ANALYSIS', 'DEPLOY', 'INGESTION', 'ITERATOR', 'MATERIALISATION', 'OPERATION', 'QUERY', 'REVERSE_ETL', 'SEED', 'SNAPSHOT', 'SOURCE', 'TEST', 'TEST_GROUP', 'TRIGGER', 'UNKNOWN']
+              values: ['AGGREGATION', 'ANALYSIS', 'DEPLOY', 'INGESTION', 'ITERATOR', 'MATERIALISATION', 'OPERATION', 'QUERY', 'REVERSE_ETL', 'SEED', 'SNAPSHOT', 'SOURCE', 'TEST', 'TEST_GROUP', 'TRIGGER', 'UNKNOWN', 'CLEANUP']
         meta:
           dimension:
             type: string
