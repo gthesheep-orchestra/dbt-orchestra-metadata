@@ -29,7 +29,7 @@ task_run_stats as (
         sum(duration_seconds) as total_task_duration_seconds,
         count(distinct integration) as unique_integrations
 
-    from {{ ref('stg_orchestra__task_runs') }}
+    from {{ ref('int_orchestra__task_run_stats') }}
 
     {% if is_incremental() %}
     where pipeline_run_id in (select pipeline_run_id from pipeline_runs)

@@ -1,0 +1,53 @@
+version: 2
+
+models:
+  - name: int_orchestra__pipeline_run_context
+    description: |
+      Intermediate model providing pipeline run context fields (pipeline_id,
+      pipeline_name, git_branch, git_commit_sha) for use in downstream task
+      and operation fact models. Reduces model fanout from
+      stg_orchestra__pipeline_runs from 4 to 3 direct children.
+    columns:
+      - name: pipeline_run_id
+        description: Unique identifier for the pipeline run
+        data_tests:
+          - not_null
+      - name: pipeline_id
+        description: Identifier of the pipeline definition
+      - name: pipeline_name
+        description: Human-readable name of the pipeline
+      - name: git_branch
+        description: Git branch the pipeline ran from
+      - name: git_commit_sha
+        description: Git commit SHA the pipeline ran from
+
+  - name: int_orchestra__task_run_stats
+    description: |
+      Intermediate model providing task run fields for aggregation in
+      fct_pipeline_runs (task counts and durations per pipeline) and for
+      context lookups in fct_operations (task_run_id, pipeline_run_id,
+      task_name). Reduces model fanout from stg_orchestra__task_runs
+      from 4 to 3 direct children.
+    columns:
+      - name: task_run_id
+        description: Unique identifier for the task run
+        data_tests:
+          - not_null
+      - name: pipeline_run_id
+        description: ID of the parent pipeline run
+      - name: task_name
+        description: Name of the task
+      - name: is_successful
+        description: Whether the task completed successfully
+      - name: is_failed
+        description: Whether the task failed
+      - name: is_skipped
+        description: Whether the task was skipped
+      - name: has_warning
+        description: Whether the task completed with warnings
+      - name: duration_seconds
+        description: Total execution duration in seconds
+      - name: integration
+        description: Integration type used by this task
+      - name: integration_job
+        description: Specific job within the integration
