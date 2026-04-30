@@ -4,6 +4,42 @@ with source as (
 
 ),
 
+-- Normalise vendor-specific asset_type values into the canonical set before
+-- any downstream tests or models consume the column.
+normalized as (
+
+    select
+        asset_id,
+        external_id,
+        asset_name,
+        case
+            when upper(asset_type) in (
+                'DASHBOARD', 'DASHBOARD_VIEWS', 'DATASET', 'QUERIES',
+                'TABLE', 'UNKNOWN', 'VIEW', 'WORKBOOK'
+            ) then upper(asset_type)
+            -- Common vendor-specific variants
+            when upper(asset_type) = 'DASHBOARD_VIEW'  then 'DASHBOARD_VIEWS'
+            when upper(asset_type) = 'QUERY'           then 'QUERIES'
+            when upper(asset_type) in ('BASE TABLE', 'MANAGED TABLE',
+                                       'EXTERNAL TABLE')  then 'TABLE'
+            when upper(asset_type) in ('MATERIALIZED VIEW',
+                                       'SECURE VIEW')     then 'VIEW'
+            when upper(asset_type) in ('REPORT', 'TILE')  then 'DASHBOARD'
+            else 'UNKNOWN'
+        end                                            as asset_type,
+        integration,
+        status,
+        upstream_dependencies,
+        downstream_dependencies,
+        row_count,
+        bytes,
+        created_in_integration,
+        _dlt_load_id,
+        _dlt_id
+    from source
+
+),
+
 renamed as (
 
     select
@@ -33,7 +69,7 @@ renamed as (
         -- timestamps
         created_in_integration as created_at_utc,
 
-        -- asset type flags
+        -- asset type flags (evaluated against the normalised asset_type)
         asset_type in ('TABLE', 'VIEW') as is_database_object,
         asset_type in ('DASHBOARD', 'DASHBOARD_VIEWS', 'WORKBOOK') as is_bi_asset,
         asset_type in ('DATASET', 'QUERIES') as is_query_asset,
@@ -42,7 +78,7 @@ renamed as (
         _dlt_load_id,
         _dlt_id
 
-    from source
+    from normalized
 
 )
 
