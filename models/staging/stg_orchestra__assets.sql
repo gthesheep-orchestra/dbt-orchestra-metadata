@@ -4,6 +4,15 @@ with source as (
 
 ),
 
+normalized as (
+
+    select
+        *,
+        upper(coalesce(nullif(trim(asset_type), ''), 'UNKNOWN')) as asset_type_normalized
+    from source
+
+),
+
 renamed as (
 
     select
@@ -13,7 +22,7 @@ renamed as (
 
         -- attributes
         asset_name,
-        asset_type,
+        asset_type_normalized as asset_type,
         integration,
         status as asset_status,
 
@@ -34,15 +43,15 @@ renamed as (
         created_in_integration as created_at_utc,
 
         -- asset type flags
-        asset_type in ('TABLE', 'VIEW') as is_database_object,
-        asset_type in ('DASHBOARD', 'DASHBOARD_VIEWS', 'WORKBOOK') as is_bi_asset,
-        asset_type in ('DATASET', 'QUERIES') as is_query_asset,
+        asset_type_normalized in ('TABLE', 'VIEW') as is_database_object,
+        asset_type_normalized in ('DASHBOARD', 'DASHBOARD_VIEWS', 'WORKBOOK') as is_bi_asset,
+        asset_type_normalized in ('DATASET', 'QUERIES') as is_query_asset,
 
         -- dlt metadata
         _dlt_load_id,
         _dlt_id
 
-    from source
+    from normalized
 
 )
 

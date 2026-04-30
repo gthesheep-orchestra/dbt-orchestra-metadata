@@ -132,6 +132,8 @@ sources:
             data_tests:
               - accepted_values:
                   values: ['CREATED', 'QUEUED', 'RUNNING', 'SUCCEEDED', 'WARNING', 'FAILED', 'SKIPPED', 'UNKNOWN', 'CANCELLING', 'CANCELING', 'CANCELLED']
+                  config:
+                    where: "trim(operation_status) is not null and trim(operation_status) != ''"
           - name: operation_type
             description: |
               Type of operation performed.
@@ -141,6 +143,8 @@ sources:
             data_tests:
               - accepted_values:
                   values: ['AGGREGATION', 'ANALYSIS', 'DEPLOY', 'INGESTION', 'ITERATOR', 'MATERIALISATION', 'OPERATION', 'QUERY', 'REVERSE_ETL', 'SEED', 'SNAPSHOT', 'SOURCE', 'TEST', 'TEST_GROUP', 'TRIGGER', 'UNKNOWN']
+                  config:
+                    where: "trim(operation_type) is not null and trim(operation_type) != ''"
           - name: integration
             description: Integration type that performed the operation
           - name: integration_job
@@ -187,6 +191,8 @@ sources:
             data_tests:
               - accepted_values:
                   values: ['DASHBOARD', 'DASHBOARD_VIEWS', 'DATASET', 'QUERIES', 'TABLE', 'UNKNOWN', 'VIEW', 'WORKBOOK']
+                  config:
+                    where: "trim(asset_type) is not null and trim(asset_type) != ''"
           - name: integration
             description: Integration where the asset resides
           - name: external_id

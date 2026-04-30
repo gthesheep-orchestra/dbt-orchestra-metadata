@@ -19,6 +19,16 @@ with source as (
     {% set created_at_expr = 'null' %}
 {% endif %}
 
+normalized as (
+
+    select
+        *,
+        upper(coalesce(nullif(trim(operation_status), ''), 'UNKNOWN')) as operation_status_normalized,
+        upper(coalesce(nullif(trim(operation_type), ''), 'UNKNOWN')) as operation_type_normalized
+    from source
+
+),
+
 renamed as (
 
     select
@@ -29,8 +39,8 @@ renamed as (
 
         -- attributes
         operation_name,
-        operation_status,
-        operation_type,
+        operation_status_normalized as operation_status,
+        operation_type_normalized as operation_type,
         integration,
         integration_job,
 
@@ -42,23 +52,23 @@ renamed as (
         {{ created_at_expr }} as created_at_utc,
 
         -- status flags
-        operation_status = 'SUCCEEDED' as is_successful,
-        operation_status = 'FAILED' as is_failed,
-        operation_status = 'SKIPPED' as is_skipped,
-        operation_status = 'WARNING' as has_warning,
-        operation_status in ('CANCELLED', 'CANCELING', 'CANCELLING') as is_cancelled,
+        operation_status_normalized = 'SUCCEEDED' as is_successful,
+        operation_status_normalized = 'FAILED' as is_failed,
+        operation_status_normalized = 'SKIPPED' as is_skipped,
+        operation_status_normalized = 'WARNING' as has_warning,
+        operation_status_normalized in ('CANCELLED', 'CANCELING', 'CANCELLING') as is_cancelled,
 
         -- operation type flags
-        operation_type in ('INGESTION', 'SOURCE') as is_ingestion_operation,
-        operation_type in ('MATERIALISATION', 'QUERY', 'AGGREGATION') as is_transformation_operation,
-        operation_type in ('TEST', 'TEST_GROUP', 'ANALYSIS') as is_testing_operation,
-        operation_type in ('DEPLOY', 'SNAPSHOT', 'SEED') as is_deployment_operation,
+        operation_type_normalized in ('INGESTION', 'SOURCE') as is_ingestion_operation,
+        operation_type_normalized in ('MATERIALISATION', 'QUERY', 'AGGREGATION') as is_transformation_operation,
+        operation_type_normalized in ('TEST', 'TEST_GROUP', 'ANALYSIS') as is_testing_operation,
+        operation_type_normalized in ('DEPLOY', 'SNAPSHOT', 'SEED') as is_deployment_operation,
 
         -- dlt metadata
         _dlt_load_id,
         _dlt_id
 
-    from source
+    from normalized
 
 )
 
