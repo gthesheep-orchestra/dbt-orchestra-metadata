@@ -146,7 +146,7 @@ models:
         description: Status of the operation
         data_tests:
           - accepted_values:
-              values: ['SUCCEEDED', 'FAILED', 'SKIPPED', 'UNKNOWN', 'WARNING', 'CANCELLED']
+              values: ['CREATED', 'QUEUED', 'RUNNING', 'SUCCEEDED', 'WARNING', 'FAILED', 'SKIPPED', 'UNKNOWN', 'CANCELLING', 'CANCELING', 'CANCELLED']
       - name: operation_type
         description: Type of operation performed
         data_tests:
