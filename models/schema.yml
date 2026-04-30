@@ -128,19 +128,19 @@ sources:
           - name: operation_status
             description: |
               Status of the operation.
-              Valid values: CREATED, QUEUED, RUNNING, SUCCEEDED, WARNING, FAILED, SKIPPED, UNKNOWN, CANCELLING, CANCELING, CANCELLED
+              Valid values: CREATED, QUEUED, RUNNING, SUCCEEDED, WARNING, FAILED, SKIPPED, UNKNOWN, CANCELLING, CANCELING, CANCELLED, CANCELED
             data_tests:
               - accepted_values:
-                  values: ['CREATED', 'QUEUED', 'RUNNING', 'SUCCEEDED', 'WARNING', 'FAILED', 'SKIPPED', 'UNKNOWN', 'CANCELLING', 'CANCELING', 'CANCELLED']
+                  values: ['CREATED', 'QUEUED', 'RUNNING', 'SUCCEEDED', 'WARNING', 'FAILED', 'SKIPPED', 'UNKNOWN', 'CANCELLING', 'CANCELING', 'CANCELLED', 'CANCELED']
           - name: operation_type
             description: |
               Type of operation performed.
               Valid values: AGGREGATION, ANALYSIS, DEPLOY, INGESTION, ITERATOR,
-              MATERIALISATION, OPERATION, QUERY, REVERSE_ETL, SEED, SNAPSHOT,
+              MATERIALISATION, MATERIALIZATION, OPERATION, QUERY, REVERSE_ETL, SEED, SNAPSHOT,
               SOURCE, TEST, TEST_GROUP, TRIGGER, UNKNOWN
             data_tests:
               - accepted_values:
-                  values: ['AGGREGATION', 'ANALYSIS', 'DEPLOY', 'INGESTION', 'ITERATOR', 'MATERIALISATION', 'OPERATION', 'QUERY', 'REVERSE_ETL', 'SEED', 'SNAPSHOT', 'SOURCE', 'TEST', 'TEST_GROUP', 'TRIGGER', 'UNKNOWN']
+                  values: ['AGGREGATION', 'ANALYSIS', 'DEPLOY', 'INGESTION', 'ITERATOR', 'MATERIALISATION', 'MATERIALIZATION', 'OPERATION', 'QUERY', 'REVERSE_ETL', 'SEED', 'SNAPSHOT', 'SOURCE', 'TEST', 'TEST_GROUP', 'TRIGGER', 'UNKNOWN']
           - name: integration
             description: Integration type that performed the operation
           - name: integration_job
