@@ -219,7 +219,7 @@ models:
         description: Type of asset (TABLE, VIEW, DASHBOARD, etc.)
         data_tests:
           - accepted_values:
-              values: ['DASHBOARD', 'DASHBOARD_VIEWS', 'DATASET', 'QUERIES', 'TABLE', 'UNKNOWN', 'VIEW', 'WORKBOOK']
+              values: ['DASHBOARD', 'DASHBOARD_VIEWS', 'DATASET', 'QUERIES', 'TABLE', 'UNKNOWN', 'VIEW', 'WORKBOOK', 'FOLDER']
         meta:
           dimension:
             type: string
