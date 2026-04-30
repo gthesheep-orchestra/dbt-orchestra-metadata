@@ -206,7 +206,7 @@ models:
         description: Type of asset
         data_tests:
           - accepted_values:
-              values: ['DASHBOARD', 'DASHBOARD_VIEWS', 'DATASET', 'QUERIES', 'TABLE', 'UNKNOWN', 'VIEW', 'WORKBOOK']
+              values: ['DASHBOARD', 'DASHBOARD_VIEWS', 'DATASET', 'QUERIES', 'TABLE', 'UNKNOWN', 'VIEW', 'WORKBOOK', 'MATERIALIZED_VIEW']
       - name: integration
         description: Integration where the asset resides
       - name: asset_status
