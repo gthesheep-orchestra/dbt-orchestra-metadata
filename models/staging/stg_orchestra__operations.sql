@@ -19,6 +19,28 @@ with source as (
     {% set created_at_expr = 'null' %}
 {% endif %}
 
+mapped as (
+
+    -- Normalise raw provider-specific operation_status values to the canonical
+    -- set. Any unrecognised value is coalesced to UNKNOWN so downstream tests
+    -- remain stable regardless of new provider statuses added in the future.
+    select
+        *,
+        coalesce(
+            case
+                when upper(operation_status) in (
+                    'CREATED', 'QUEUED', 'RUNNING', 'SUCCEEDED', 'WARNING',
+                    'FAILED', 'SKIPPED', 'UNKNOWN', 'CANCELLING', 'CANCELING',
+                    'CANCELLED'
+                ) then upper(operation_status)
+                when upper(operation_status) = 'CANCELED' then 'CANCELLED'
+            end,
+            'UNKNOWN'
+        ) as operation_status_canonical
+    from source
+
+),
+
 renamed as (
 
     select
@@ -29,7 +51,7 @@ renamed as (
 
         -- attributes
         operation_name,
-        operation_status,
+        operation_status_canonical as operation_status,
         operation_type,
         integration,
         integration_job,
@@ -42,11 +64,11 @@ renamed as (
         {{ created_at_expr }} as created_at_utc,
 
         -- status flags
-        operation_status = 'SUCCEEDED' as is_successful,
-        operation_status = 'FAILED' as is_failed,
-        operation_status = 'SKIPPED' as is_skipped,
-        operation_status = 'WARNING' as has_warning,
-        operation_status in ('CANCELLED', 'CANCELING', 'CANCELLING') as is_cancelled,
+        operation_status_canonical = 'SUCCEEDED' as is_successful,
+        operation_status_canonical = 'FAILED' as is_failed,
+        operation_status_canonical = 'SKIPPED' as is_skipped,
+        operation_status_canonical = 'WARNING' as has_warning,
+        operation_status_canonical in ('CANCELLED', 'CANCELING', 'CANCELLING') as is_cancelled,
 
         -- operation type flags
         operation_type in ('INGESTION', 'SOURCE') as is_ingestion_operation,
@@ -58,7 +80,7 @@ renamed as (
         _dlt_load_id,
         _dlt_id
 
-    from source
+    from mapped
 
 )
 

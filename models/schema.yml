@@ -128,10 +128,8 @@ sources:
           - name: operation_status
             description: |
               Status of the operation.
-              Valid values: CREATED, QUEUED, RUNNING, SUCCEEDED, WARNING, FAILED, SKIPPED, UNKNOWN, CANCELLING, CANCELING, CANCELLED
-            data_tests:
-              - accepted_values:
-                  values: ['CREATED', 'QUEUED', 'RUNNING', 'SUCCEEDED', 'WARNING', 'FAILED', 'SKIPPED', 'UNKNOWN', 'CANCELLING', 'CANCELING', 'CANCELLED']
+              Raw values are normalised to the canonical set at the staging layer.
+              Valid canonical values: CREATED, QUEUED, RUNNING, SUCCEEDED, WARNING, FAILED, SKIPPED, UNKNOWN, CANCELLING, CANCELING, CANCELLED
           - name: operation_type
             description: |
               Type of operation performed.

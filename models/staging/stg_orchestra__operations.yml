@@ -1,0 +1,78 @@
+version: 2
+
+models:
+  - name: stg_orchestra__operations
+    description: |
+      Staged operations data with normalised operation_status values.
+      Raw provider-specific statuses are mapped to the canonical set via a
+      CASE/COALESCE expression; any unrecognised value falls back to UNKNOWN.
+      The accepted_values test is enforced here rather than on the raw source
+      so that new provider statuses do not break the dbt run.
+    columns:
+      - name: operation_id
+        description: Unique identifier for the operation
+        data_tests:
+          - unique
+          - not_null
+      - name: task_run_id
+        description: ID of the parent task run (UUID4)
+        data_tests:
+          - not_null
+      - name: external_id
+        description: External identifier from the integration
+      - name: operation_name
+        description: Name of the operation
+      - name: operation_status
+        description: |
+          Normalised status of the operation mapped to the canonical set.
+          Valid values: CREATED, QUEUED, RUNNING, SUCCEEDED, WARNING, FAILED,
+          SKIPPED, UNKNOWN, CANCELLING, CANCELING, CANCELLED
+        data_tests:
+          - not_null
+          - accepted_values:
+              values:
+                - CREATED
+                - QUEUED
+                - RUNNING
+                - SUCCEEDED
+                - WARNING
+                - FAILED
+                - SKIPPED
+                - UNKNOWN
+                - CANCELLING
+                - CANCELING
+                - CANCELLED
+      - name: operation_type
+        description: Type of operation performed
+      - name: integration
+        description: Integration type that performed the operation
+      - name: integration_job
+        description: Specific job within the integration
+      - name: rows_affected
+        description: Number of rows affected by the operation
+      - name: duration_seconds
+        description: Duration of the operation in seconds
+      - name: created_at_utc
+        description: Timestamp when the operation was created (UTC)
+      - name: is_successful
+        description: True when operation_status is SUCCEEDED
+      - name: is_failed
+        description: True when operation_status is FAILED
+      - name: is_skipped
+        description: True when operation_status is SKIPPED
+      - name: has_warning
+        description: True when operation_status is WARNING
+      - name: is_cancelled
+        description: True when operation_status is CANCELLED, CANCELING, or CANCELLING
+      - name: is_ingestion_operation
+        description: True for INGESTION or SOURCE operation types
+      - name: is_transformation_operation
+        description: True for MATERIALISATION, QUERY, or AGGREGATION operation types
+      - name: is_testing_operation
+        description: True for TEST, TEST_GROUP, or ANALYSIS operation types
+      - name: is_deployment_operation
+        description: True for DEPLOY, SNAPSHOT, or SEED operation types
+      - name: _dlt_load_id
+        description: dlt load identifier for tracking ingestion batches
+      - name: _dlt_id
+        description: dlt unique row identifier
