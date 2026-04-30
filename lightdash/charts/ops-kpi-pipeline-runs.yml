@@ -1,11 +1,14 @@
 chartConfig:
+  config:
+    selectedField: dim_pipelines_total_pipeline_runs
+    showBigNumberLabel: true
   type: big_number
 description: Total pipeline runs for the selected date range.
 metricQuery:
   dimensions: []
-  exploreName: fct_pipeline_runs
+  exploreName: dim_pipelines
   metrics:
-    - fct_pipeline_runs_count
+    - dim_pipelines_total_pipeline_runs
   filters:
     dimensions:
       and: []
@@ -15,5 +18,5 @@ metricQuery:
 name: Ops KPI Pipeline Runs
 slug: ops-kpi-pipeline-runs
 spaceSlug: operations
-tableName: fct_pipeline_runs
+tableName: dim_pipelines
 version: 1

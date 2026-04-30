@@ -1,4 +1,7 @@
 chartConfig:
+  config:
+    selectedField: fct_task_runs_failed_task_runs
+    showBigNumberLabel: true
   type: big_number
 description: Total failed task runs for the selected period.
 metricQuery:

@@ -10,6 +10,7 @@ filters:
         fieldId: fct_pipeline_runs_created_date_day
         tableName: fct_pipeline_runs
       tileTargets:
+        ops-kpi-pipeline-runs: false
         ops-kpi-task-failure-rate:
           fieldId: fct_task_runs_created_date_day
           tableName: fct_task_runs
