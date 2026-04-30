@@ -34,3 +34,24 @@ macros:
       - name: expression
         type: string
         description: SQL expression to aggregate.
+
+  - name: get_run_status_color
+    description: >
+      Returns a color code string for a given run status value, useful for
+      visualization and conditional formatting in BI tools.
+      Maps Orchestra run statuses (SUCCEEDED, FAILED, WARNING, RUNNING,
+      CREATED, QUEUED, CANCELLED, CANCELLING, SKIPPED) to named colors.
+    arguments:
+      - name: status_column
+        type: string
+        description: SQL expression or column name containing the run status value.
+
+  - name: json_array_length
+    description: >
+      Returns the number of elements in a JSON array column in a
+      warehouse-agnostic way. Dispatches to adapter-specific implementations
+      covering Snowflake, BigQuery, Postgres, Redshift, DuckDB, and Databricks.
+    arguments:
+      - name: column_name
+        type: string
+        description: SQL expression or column name containing the JSON array string.
