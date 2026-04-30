@@ -53,7 +53,7 @@ pipeline_context as (
         git_branch,
         git_commit_sha
 
-    from {{ ref('stg_orchestra__pipeline_runs') }}
+    from {{ ref('fct_pipeline_runs') }}
 
 ),
 

@@ -23,7 +23,7 @@ task_context as (
         task_run_id,
         pipeline_run_id,
         task_name
-    from {{ ref('stg_orchestra__task_runs') }}
+    from {{ ref('fct_task_runs') }}
 
 ),
 
@@ -35,7 +35,7 @@ pipeline_context as (
         pipeline_name,
         git_branch,
         git_commit_sha
-    from {{ ref('stg_orchestra__pipeline_runs') }}
+    from {{ ref('fct_pipeline_runs') }}
 
 ),
 
