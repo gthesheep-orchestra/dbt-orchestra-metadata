@@ -600,6 +600,7 @@ models:
       - name: task_run_id
         description: ID of the parent task run
         data_tests:
+          - not_null
           - relationships:
               to: ref('fct_task_runs')
               field: task_run_id
