@@ -1,0 +1,216 @@
+version: 2
+
+models:
+  - name: int_pipeline_runs
+    description: |
+      Intermediate model passing through staged pipeline run data.
+      Serves as the single consumer of stg_orchestra__pipeline_runs for
+      the mart layer, preventing staging model fan-out and providing a
+      stable interface for future enrichment logic.
+    columns:
+      - name: pipeline_run_id
+        description: Unique identifier for the pipeline run
+        data_tests:
+          - unique
+          - not_null
+      - name: pipeline_id
+        description: Identifier of the pipeline definition
+        data_tests:
+          - not_null
+      - name: pipeline_name
+        description: Human-readable name of the pipeline
+      - name: run_status
+        description: Current status of the pipeline run
+      - name: triggered_by
+        description: User or system that initiated the run
+      - name: git_branch
+        description: Git branch the pipeline ran from
+      - name: git_commit_sha
+        description: Git commit SHA the pipeline ran from
+      - name: created_at_utc
+        description: Timestamp when the pipeline run was created
+        data_tests:
+          - not_null
+      - name: started_at_utc
+        description: Timestamp when execution started
+      - name: updated_at_utc
+        description: Timestamp of last status update
+      - name: completed_at_utc
+        description: Timestamp when execution completed
+      - name: duration_seconds
+        description: Total execution duration in seconds
+      - name: is_successful
+        description: Whether the run completed successfully
+      - name: is_failed
+        description: Whether the run failed
+      - name: is_in_progress
+        description: Whether the run is still executing
+      - name: is_cancelled
+        description: Whether the run was cancelled
+      - name: has_warning
+        description: Whether the run completed with warnings
+      - name: _dlt_load_id
+        description: dlt ingestion batch identifier
+      - name: _dlt_id
+        description: dlt unique row identifier
+
+  - name: int_task_runs
+    description: |
+      Intermediate model passing through staged task run data.
+      Serves as the single consumer of stg_orchestra__task_runs for
+      the mart layer, preventing staging model fan-out and providing a
+      stable interface for future enrichment logic.
+    columns:
+      - name: task_run_id
+        description: Unique identifier for the task run
+        data_tests:
+          - unique
+          - not_null
+      - name: pipeline_run_id
+        description: ID of the parent pipeline run
+        data_tests:
+          - not_null
+      - name: task_name
+        description: Name of the task
+      - name: task_status
+        description: Current status of the task run
+      - name: integration
+        description: Integration type (e.g., dbt, Fivetran)
+      - name: integration_job
+        description: Specific job within the integration
+      - name: status_message
+        description: Status or error message
+      - name: external_status
+        description: Status from the external integration
+      - name: created_at_utc
+        description: Timestamp when the task run was created
+        data_tests:
+          - not_null
+      - name: started_at_utc
+        description: Timestamp when execution started
+      - name: updated_at_utc
+        description: Timestamp of last status update
+      - name: completed_at_utc
+        description: Timestamp when execution completed
+      - name: duration_seconds
+        description: Total execution duration in seconds
+      - name: is_successful
+        description: Whether the task completed successfully
+      - name: is_failed
+        description: Whether the task failed
+      - name: is_in_progress
+        description: Whether the task is still executing
+      - name: is_cancelled
+        description: Whether the task was cancelled
+      - name: is_skipped
+        description: Whether the task was skipped
+      - name: has_warning
+        description: Whether the task completed with warnings
+      - name: _dlt_load_id
+        description: dlt ingestion batch identifier
+      - name: _dlt_id
+        description: dlt unique row identifier
+
+  - name: int_operations
+    description: |
+      Intermediate model passing through staged operation data.
+      Serves as the single consumer of stg_orchestra__operations for
+      the mart layer, preventing staging model fan-out and providing a
+      stable interface for future enrichment logic.
+    columns:
+      - name: operation_id
+        description: Unique identifier for the operation
+        data_tests:
+          - unique
+          - not_null
+      - name: task_run_id
+        description: ID of the parent task run
+        data_tests:
+          - not_null
+      - name: external_id
+        description: External identifier from the integration
+      - name: operation_name
+        description: Name of the operation
+      - name: operation_status
+        description: Status of the operation
+      - name: operation_type
+        description: Type of operation performed
+      - name: integration
+        description: Integration that performed the operation
+      - name: integration_job
+        description: Specific job within the integration
+      - name: rows_affected
+        description: Number of rows affected
+      - name: duration_seconds
+        description: Operation duration in seconds
+      - name: created_at_utc
+        description: Timestamp when the operation was created
+        data_tests:
+          - not_null
+      - name: is_successful
+        description: Whether the operation succeeded
+      - name: is_failed
+        description: Whether the operation failed
+      - name: is_skipped
+        description: Whether the operation was skipped
+      - name: has_warning
+        description: Whether the operation had warnings
+      - name: is_cancelled
+        description: Whether the operation was cancelled
+      - name: is_ingestion_operation
+        description: Whether this is a data ingestion operation
+      - name: is_transformation_operation
+        description: Whether this is a transformation operation
+      - name: is_testing_operation
+        description: Whether this is a testing operation
+      - name: is_deployment_operation
+        description: Whether this is a deployment operation
+      - name: _dlt_load_id
+        description: dlt ingestion batch identifier
+      - name: _dlt_id
+        description: dlt unique row identifier
+
+  - name: int_assets
+    description: |
+      Intermediate model passing through staged asset data.
+      Serves as the single consumer of stg_orchestra__assets for
+      the mart layer, preventing staging model fan-out and providing a
+      stable interface for future enrichment logic.
+    columns:
+      - name: asset_id
+        description: Unique identifier for the asset
+        data_tests:
+          - unique
+          - not_null
+      - name: external_id
+        description: External identifier in the source system
+      - name: asset_name
+        description: Name of the asset
+      - name: asset_type
+        description: Type of asset (TABLE, VIEW, DASHBOARD, etc.)
+      - name: integration
+        description: Integration where the asset resides
+      - name: asset_status
+        description: Current status of the asset
+      - name: upstream_dependencies
+        description: JSON array of upstream dependencies
+      - name: downstream_dependencies
+        description: JSON array of downstream dependencies
+      - name: row_count
+        description: Number of rows in the asset
+      - name: size_bytes
+        description: Size of the asset in bytes
+      - name: size_gb
+        description: Size of the asset in gigabytes
+      - name: created_at_utc
+        description: Timestamp when created in the integration
+      - name: is_database_object
+        description: Whether this is a table or view
+      - name: is_bi_asset
+        description: Whether this is a BI/dashboard asset
+      - name: is_query_asset
+        description: Whether this is a query/dataset asset
+      - name: _dlt_load_id
+        description: dlt ingestion batch identifier
+      - name: _dlt_id
+        description: dlt unique row identifier

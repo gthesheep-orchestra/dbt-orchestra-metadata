@@ -9,7 +9,7 @@
 
 with task_runs as (
 
-    select * from {{ ref('stg_orchestra__task_runs') }}
+    select * from {{ ref('int_task_runs') }}
 
     {% if is_incremental() %}
     where updated_at_utc > (select max(updated_at_utc) from {{ this }})
@@ -34,7 +34,7 @@ operation_stats as (
         sum(case when is_testing_operation then 1 else 0 end) as testing_operations,
         sum(case when is_deployment_operation then 1 else 0 end) as deployment_operations
 
-    from {{ ref('stg_orchestra__operations') }}
+    from {{ ref('int_operations') }}
 
     {% if is_incremental() %}
     where task_run_id in (select task_run_id from task_runs)
@@ -53,7 +53,7 @@ pipeline_context as (
         git_branch,
         git_commit_sha
 
-    from {{ ref('stg_orchestra__pipeline_runs') }}
+    from {{ ref('int_pipeline_runs') }}
 
 ),
 

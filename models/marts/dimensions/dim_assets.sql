@@ -7,7 +7,7 @@
 
 with assets as (
 
-    select * from {{ ref('stg_orchestra__assets') }}
+    select * from {{ ref('int_assets') }}
 
 ),
 

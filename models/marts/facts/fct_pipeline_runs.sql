@@ -9,7 +9,7 @@
 
 with pipeline_runs as (
 
-    select * from {{ ref('stg_orchestra__pipeline_runs') }}
+    select * from {{ ref('int_pipeline_runs') }}
 
     {% if is_incremental() %}
     where updated_at_utc > (select max(updated_at_utc) from {{ this }})
@@ -29,7 +29,7 @@ task_run_stats as (
         sum(duration_seconds) as total_task_duration_seconds,
         count(distinct integration) as unique_integrations
 
-    from {{ ref('stg_orchestra__task_runs') }}
+    from {{ ref('int_task_runs') }}
 
     {% if is_incremental() %}
     where pipeline_run_id in (select pipeline_run_id from pipeline_runs)

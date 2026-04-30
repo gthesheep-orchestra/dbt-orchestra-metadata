@@ -9,7 +9,7 @@
 
 with operations as (
 
-    select * from {{ ref('stg_orchestra__operations') }}
+    select * from {{ ref('int_operations') }}
 
     {% if is_incremental() %}
     where created_at_utc > (select max(created_at_utc) from {{ this }})
@@ -23,7 +23,7 @@ task_context as (
         task_run_id,
         pipeline_run_id,
         task_name
-    from {{ ref('stg_orchestra__task_runs') }}
+    from {{ ref('int_task_runs') }}
 
 ),
 
@@ -35,7 +35,7 @@ pipeline_context as (
         pipeline_name,
         git_branch,
         git_commit_sha
-    from {{ ref('stg_orchestra__pipeline_runs') }}
+    from {{ ref('int_pipeline_runs') }}
 
 ),
 

@@ -7,7 +7,7 @@
 
 with pipeline_runs as (
 
-    select * from {{ ref('stg_orchestra__pipeline_runs') }}
+    select * from {{ ref('int_pipeline_runs') }}
 
 ),
 

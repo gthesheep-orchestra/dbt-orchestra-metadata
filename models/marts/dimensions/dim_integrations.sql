@@ -10,7 +10,7 @@ with task_integrations as (
     select distinct
         integration,
         integration_job
-    from {{ ref('stg_orchestra__task_runs') }}
+    from {{ ref('int_task_runs') }}
     where integration is not null
 
 ),
@@ -20,7 +20,7 @@ operation_integrations as (
     select distinct
         integration,
         integration_job
-    from {{ ref('stg_orchestra__operations') }}
+    from {{ ref('int_operations') }}
     where integration is not null
 
 ),
@@ -30,7 +30,7 @@ asset_integrations as (
     select distinct
         integration,
         cast(null as {{ dbt.type_string() }}) as integration_job
-    from {{ ref('stg_orchestra__assets') }}
+    from {{ ref('int_assets') }}
     where integration is not null
 
 ),
@@ -63,7 +63,7 @@ integration_stats as (
         avg(o.duration_seconds) as avg_operation_duration_seconds
 
     from all_integrations as ai
-    left join {{ ref('stg_orchestra__task_runs') }} as t
+    left join {{ ref('int_task_runs') }} as t
         on
             ai.integration = t.integration
             and (
@@ -73,7 +73,7 @@ integration_stats as (
                     and t.integration_job is null
                 )
             )
-    left join {{ ref('stg_orchestra__operations') }} as o
+    left join {{ ref('int_operations') }} as o
         on
             ai.integration = o.integration
             and (
