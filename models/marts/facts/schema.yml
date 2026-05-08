@@ -643,7 +643,7 @@ models:
         description: Status of the operation
         data_tests:
           - accepted_values:
-              values: ['SUCCEEDED', 'FAILED', 'SKIPPED', 'UNKNOWN', 'WARNING', 'CANCELLED']
+              values: ['CREATED', 'QUEUED', 'RUNNING', 'SUCCEEDED', 'WARNING', 'FAILED', 'SKIPPED', 'UNKNOWN', 'CANCELLING', 'CANCELING', 'CANCELLED', 'CANCELED', 'REUSED']
         meta:
           dimension:
             type: string
@@ -652,7 +652,7 @@ models:
         description: Type of operation performed
         data_tests:
           - accepted_values:
-              values: ['AGGREGATION', 'ANALYSIS', 'DEPLOY', 'INGESTION', 'ITERATOR', 'MATERIALISATION', 'OPERATION', 'QUERY', 'REVERSE_ETL', 'SEED', 'SNAPSHOT', 'SOURCE', 'TEST', 'TEST_GROUP', 'TRIGGER', 'UNKNOWN']
+              values: ['AGGREGATION', 'ANALYSIS', 'DEPLOY', 'INGESTION', 'ITERATOR', 'MATERIALISATION', 'MATERIALIZATION', 'OPERATION', 'QUERY', 'REFRESH', 'REVERSE_ETL', 'SEED', 'SNAPSHOT', 'SOURCE', 'TEST', 'TEST_GROUP', 'TRIGGER', 'UNKNOWN']
         meta:
           dimension:
             type: string
