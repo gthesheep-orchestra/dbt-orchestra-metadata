@@ -1,0 +1,75 @@
+version: v1
+name: Orchestra Metadata -> BigQuery
+pipeline:
+  run-dlt:
+    tasks:
+      dlt:
+        integration: PYTHON
+        integration_job: PYTHON_EXECUTE_SCRIPT
+        parameters:
+          package_manager: PIP
+          python_version: '3.12'
+          build_command: pip install -r requirements.txt
+          set_outputs: false
+          source: GIT
+          command: python run.py bigquery
+          branch: main
+          project_dir: metadata_api
+          shallow_clone_dirs: metadata_api
+        depends_on: []
+        name: dlt (Orchestra Metadata)
+        connection: python_dlt__blueprints__84430
+    depends_on: []
+    name: ''
+  63693d3b-34f8-4342-8dbf-ee2d1e55e70f:
+    tasks:
+      aa8783d2-5c3f-4cf1-a6c9-bef31ee71f9b:
+        integration: PYTHON
+        integration_job: PYTHON_EXECUTE_SCRIPT
+        parameters:
+          package_manager: UV
+          python_version: '3.12'
+          build_command: 'uv sync && dbt deps '
+          set_outputs: false
+          source: GIT
+          command: python -m sqlfluff lint models/
+          branch: ${{ inputs.git_branch }}
+        depends_on: []
+        name: Run SQLFluff
+        connection: dbt_metadata_40612
+    depends_on: []
+    condition: ${{ env.ENV_NAME == 'Staging' }}
+    name: group
+  ad50d8e3-91c5-45a3-8eb3-dba8062960b5:
+    tasks:
+      9e7c692c-b686-4fe2-a406-e7123fa1ef1c:
+        integration: DBT_CORE
+        integration_job: DBT_CORE_EXECUTE
+        parameters:
+          commands: dbt parse
+          package_manager: UV
+          python_version: '3.12'
+          branch: ${{ inputs.git_branch }}
+        depends_on: []
+        name: Run dbt
+        connection: dbt_core_metadata_65944
+    depends_on:
+    - run-dlt
+    name: group
+schedule:
+- name: Hourly
+  cron: 0 * ? * * *
+  timezone: UTC
+  environment: 170dcbbe-76b3-47aa-ab9e-8e6c8e3e108b
+webhook:
+  enabled: false
+configuration:
+  concurrency:
+    max_active: 1
+inputs:
+  warehouse:
+    type: string
+    default: bigquery
+  git_branch:
+    type: string
+    default: main
