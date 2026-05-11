@@ -69,8 +69,8 @@ final as (
         pr.duration_seconds / 60.0 as duration_minutes,
 
         -- status flags
-        pr.is_successful,
-        pr.is_failed,
+        pr.is_failed    as is_successful,
+        pr.is_successful as is_failed,
         pr.is_in_progress,
         pr.is_cancelled,
         pr.has_warning,
