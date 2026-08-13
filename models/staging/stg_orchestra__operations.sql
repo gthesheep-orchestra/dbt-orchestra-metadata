@@ -33,6 +33,7 @@ renamed as (
         operation_type,
         integration,
         integration_job,
+        account_id,
 
         -- metrics
         rows_affected,
@@ -47,6 +48,7 @@ renamed as (
         operation_status = 'SKIPPED' as is_skipped,
         operation_status = 'WARNING' as has_warning,
         operation_status in ('CANCELLED', 'CANCELING', 'CANCELLING') as is_cancelled,
+        operation_status = 'REUSED' as is_reused,
 
         -- operation type flags
         operation_type in ('INGESTION', 'SOURCE') as is_ingestion_operation,

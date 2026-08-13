@@ -62,6 +62,7 @@ final as (
     select
         -- ids
         tr.task_run_id,
+        tr.unique_task_id,
         tr.pipeline_run_id,
         pc.pipeline_id,
 
@@ -75,6 +76,9 @@ final as (
         tr.integration_job,
         tr.status_message,
         tr.external_status,
+        tr.account_id,
+        tr.is_matrix_parent,
+        tr.is_state_orchestration_enabled,
 
         -- pipeline context
         pc.pipeline_name,

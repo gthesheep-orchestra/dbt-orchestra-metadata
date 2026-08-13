@@ -39,12 +39,15 @@ This dbt package transforms Orchestra platform metadata into an analytics-ready 
 
 ### Data Sources
 
-The package works with data ingested from the Orchestra API via [dlt](https://dlthub.com/) (data load tool). It processes four main data streams:
+The package works with data ingested from the Orchestra API via [dlt](https://dlthub.com/) (data load tool). It processes five main data streams:
 
+- **Pipelines**: Pipeline definition metadata (one row per pipeline, not per run) - used to filter out deleted pipelines
 - **Pipeline Runs**: Execution metadata for orchestrated pipelines including status, timing, and git context
 - **Task Runs**: Individual task executions within pipelines with integration-specific details
 - **Operations**: Granular operation-level details including rows affected, duration, and operation types (ingestion, transformation, testing, etc.)
 - **Assets**: Data asset catalog tracking tables, views, dashboards, and their upstream/downstream dependencies
+
+`pipeline_runs`, `task_runs`, and `operations` also carry an `account_id`, scoping each row to the Orchestra account that owns it.
 
 Data is incrementally loaded with a 7-day lookback window for time-series data, ensuring fresh metrics while managing API load efficiently.
 
@@ -184,12 +187,14 @@ erDiagram
 ### Layer Descriptions
 
 **Source Layer**: Raw Orchestra API data ingested via dlt
+- `pipelines` - Pipeline definitions (account_id, is_deleted)
 - `pipeline_runs` - Pipeline execution metadata
 - `task_runs` - Task execution within pipelines
 - `operations` - Granular operation details within tasks
 - `assets` - Data asset catalog with dependencies
 
 **Staging Layer**: Cleaned and standardized source data
+- `stg_orchestra__pipelines` - Pipeline definitions, used to filter out deleted pipelines
 - `stg_orchestra__pipeline_runs` - Renamed columns, calculated durations, status flags
 - `stg_orchestra__task_runs` - Enriched task data with references to pipelines
 - `stg_orchestra__operations` - Operation details with categorization flags
@@ -205,3 +210,9 @@ erDiagram
   - `fct_pipeline_runs` - Pipeline execution events with task rollups
   - `fct_task_runs` - Task execution events with operation rollups
   - `fct_operations` - Granular operation events with throughput metrics
+
+- **Metrics**: Pre-aggregated marts for dashboarding (see `models/marts/metrics/schema.yml` for the full `meta.metrics` -> Lightdash mapping)
+  - `metrics_daily_summary` - Daily pipeline/task/operation rollup
+  - `metrics_weekly_model_reuse` - Weekly dbt model build vs. reuse stats + estimated compute time saved
+  - `metrics_weekly_sao_adoption` - Weekly state-aware orchestration (SAO) adoption for dbt Core tasks
+  - `metrics_weekly_pipeline_duration` - Weekly pipeline run duration (avg/p50/p90)

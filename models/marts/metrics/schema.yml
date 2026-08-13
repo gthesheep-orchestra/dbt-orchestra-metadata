@@ -257,3 +257,169 @@ models:
               round: 1
       - name: updated_at
         description: Timestamp of last update
+
+  - name: metrics_weekly_model_reuse
+    description: |
+      Weekly dbt model build vs. reuse stats (dbt Core, MATERIALISATION operations)
+      across all accounts.
+      Rolling 30-day window, incrementally merged by week.
+    meta:
+      label: "Weekly Model Reuse"
+      group: "Orchestra Metadata"
+    columns:
+      - name: run_week
+        description: The Monday-starting week of the summary
+        data_tests:
+          - unique
+          - not_null
+        meta:
+          dimension:
+            type: date
+            label: "Week"
+            time_intervals: ['WEEK', 'MONTH', 'QUARTER', 'YEAR']
+      - name: models_reused
+        description: Count of MATERIALISATION operations that reused a previous result
+        meta:
+          metrics:
+            weekly_models_reused:
+              type: sum
+              label: "Models Reused"
+      - name: models_built
+        description: Count of MATERIALISATION operations that actually rebuilt (SUCCEEDED)
+        meta:
+          metrics:
+            weekly_models_built:
+              type: sum
+              label: "Models Built"
+      - name: reuse_rate_pct
+        description: Percentage of build-eligible operations (reused + built) that were reused
+        meta:
+          metrics:
+            avg_weekly_reuse_rate:
+              type: average
+              label: "Reuse Rate %"
+              format: "percent"
+      - name: distinct_models_reused
+        description: Number of distinct dbt models that had at least one reuse this week
+        meta:
+          metrics:
+            weekly_distinct_models_reused:
+              type: sum
+              label: "Distinct Models Reused"
+      - name: estimated_compute_minutes_saved
+        description: |
+          Estimated compute time saved by reuse, using each model's average
+          successful build duration in that same week as the counterfactual cost.
+        meta:
+          metrics:
+            weekly_compute_minutes_saved:
+              type: sum
+              label: "Est. Compute Minutes Saved"
+              round: 1
+      - name: updated_at
+        description: Timestamp of last update
+
+  - name: metrics_weekly_sao_adoption
+    description: |
+      Weekly state-aware orchestration (SAO) adoption for dbt Core tasks
+      (excluding matrix-mapped children, excluding deleted pipelines) across
+      all accounts.
+      Rolling 180-day window, incrementally merged by week.
+    meta:
+      label: "Weekly SAO Adoption"
+      group: "Orchestra Metadata"
+    columns:
+      - name: run_week
+        description: The Monday-starting week of the summary
+        data_tests:
+          - unique
+          - not_null
+        meta:
+          dimension:
+            type: date
+            label: "Week"
+            time_intervals: ['WEEK', 'MONTH', 'QUARTER', 'YEAR']
+      - name: sao_enabled_tasks
+        description: Distinct dbt Core tasks that ran with SAO enabled at least once this week
+        meta:
+          metrics:
+            weekly_sao_enabled_tasks:
+              type: sum
+              label: "SAO-Enabled Tasks"
+      - name: total_dbt_core_tasks
+        description: Distinct dbt Core tasks that ran this week
+        meta:
+          metrics:
+            weekly_total_dbt_core_tasks:
+              type: sum
+              label: "Total dbt Core Tasks"
+      - name: sao_adoption_pct
+        description: Percentage of distinct dbt Core tasks that ran with SAO enabled
+        meta:
+          metrics:
+            avg_weekly_sao_adoption_rate:
+              type: average
+              label: "SAO Adoption %"
+              format: "percent"
+      - name: sao_task_runs
+        description: Total task run executions (not distinct) with SAO enabled
+        meta:
+          metrics:
+            weekly_sao_task_runs:
+              type: sum
+              label: "SAO Task Runs"
+      - name: updated_at
+        description: Timestamp of last update
+
+  - name: metrics_weekly_pipeline_duration
+    description: |
+      Weekly pipeline run duration (avg/p50/p90), excluding deleted pipelines,
+      across all accounts.
+      Rolling 180-day window, incrementally merged by week.
+    meta:
+      label: "Weekly Pipeline Duration"
+      group: "Orchestra Metadata"
+    columns:
+      - name: run_week
+        description: The Monday-starting week of the summary
+        data_tests:
+          - unique
+          - not_null
+        meta:
+          dimension:
+            type: date
+            label: "Week"
+            time_intervals: ['WEEK', 'MONTH', 'QUARTER', 'YEAR']
+      - name: completed_runs
+        description: Number of completed pipeline runs this week
+        meta:
+          metrics:
+            weekly_completed_runs:
+              type: sum
+              label: "Completed Runs"
+      - name: avg_minutes
+        description: Average pipeline run duration in minutes
+        meta:
+          metrics:
+            avg_weekly_pipeline_minutes:
+              type: average
+              label: "Avg Duration (min)"
+              round: 2
+      - name: p50_minutes
+        description: Median (p50) pipeline run duration in minutes
+        meta:
+          metrics:
+            p50_weekly_pipeline_minutes:
+              type: average
+              label: "P50 Duration (min)"
+              round: 2
+      - name: p90_minutes
+        description: P90 pipeline run duration in minutes
+        meta:
+          metrics:
+            p90_weekly_pipeline_minutes:
+              type: average
+              label: "P90 Duration (min)"
+              round: 2
+      - name: updated_at
+        description: Timestamp of last update

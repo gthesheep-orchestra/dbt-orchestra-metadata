@@ -52,6 +52,7 @@ final as (
         pr.triggered_by,
         pr.git_branch,
         pr.git_commit_sha,
+        pr.account_id,
 
         -- timestamps
         pr.created_at_utc,

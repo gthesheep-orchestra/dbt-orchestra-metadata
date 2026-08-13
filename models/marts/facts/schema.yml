@@ -73,6 +73,14 @@ models:
           dimension:
             type: string
             label: "Git Commit"
+      - name: account_id
+        description: Identifier of the Orchestra account that owns this pipeline run
+        data_tests:
+          - not_null
+        meta:
+          dimension:
+            type: string
+            label: "Account ID"
       - name: created_at_utc
         description: Timestamp when the pipeline run was created
         data_tests:
@@ -281,6 +289,21 @@ models:
             task_runs_count:
               type: count_distinct
               label: "Task Runs"
+      - name: unique_task_id
+        description: |
+          Stable identifier for the logical task, shared across retries/matrix-mapped
+          executions of the same task definition. Use for distinct task counts
+          (e.g. SAO adoption) instead of task_run_id.
+        data_tests:
+          - not_null
+        meta:
+          dimension:
+            type: string
+            label: "Unique Task ID"
+          metrics:
+            unique_tasks_count:
+              type: count_distinct
+              label: "Unique Tasks"
       - name: pipeline_run_id
         description: ID of the parent pipeline run
         data_tests:
@@ -345,6 +368,32 @@ models:
           dimension:
             type: string
             label: "External Status"
+      - name: account_id
+        description: Identifier of the Orchestra account that owns this task run
+        data_tests:
+          - not_null
+        meta:
+          dimension:
+            type: string
+            label: "Account ID"
+      - name: is_matrix_parent
+        description: |
+          True if this row is the parent/aggregator row for a matrix-mapped task
+          rather than one of its mapped child executions.
+        meta:
+          dimension:
+            type: boolean
+            label: "Is Matrix Parent"
+      - name: is_state_orchestration_enabled
+        description: Whether the task ran with Orchestra's state-aware orchestration (SAO) enabled
+        meta:
+          dimension:
+            type: boolean
+            label: "SAO Enabled"
+          metrics:
+            sao_enabled_task_runs:
+              type: sum
+              label: "SAO-Enabled Task Runs"
       - name: pipeline_name
         description: Name of the parent pipeline
         meta:
@@ -669,6 +718,14 @@ models:
           dimension:
             type: string
             label: "Integration Job"
+      - name: account_id
+        description: Identifier of the Orchestra account that owns this operation
+        data_tests:
+          - not_null
+        meta:
+          dimension:
+            type: string
+            label: "Account ID"
       - name: task_name
         description: Name of the parent task
         meta:
@@ -798,6 +855,16 @@ models:
           dimension:
             type: boolean
             label: "Is Cancelled"
+      - name: is_reused
+        description: Whether the operation reused a previous result instead of rebuilding (dbt node reuse)
+        meta:
+          dimension:
+            type: boolean
+            label: "Is Reused"
+          metrics:
+            reused_operations:
+              type: sum
+              label: "Reused Operations"
       - name: is_ingestion_operation
         description: Whether this is a data ingestion operation
         meta:
