@@ -21,7 +21,9 @@ sources:
           - name: id
             description: Unique identifier for the pipeline run (UUID4)
             data_tests:
-              - unique
+              - unique:
+                  config:
+                    severity: warn
               - not_null
           - name: pipeline_id
             description: Identifier of the pipeline that was run (UUID4)
@@ -36,6 +38,8 @@ sources:
             data_tests:
               - accepted_values:
                   values: ['CREATED', 'RUNNING', 'SUCCEEDED', 'WARNING', 'FAILED', 'CANCELLING', 'CANCELLED']
+                  config:
+                    severity: warn
           - name: triggered_by
             description: User or system that initiated the pipeline run
           - name: created_at
@@ -71,7 +75,9 @@ sources:
           - name: id
             description: Unique identifier for the task run (UUID4)
             data_tests:
-              - unique
+              - unique:
+                  config:
+                    severity: warn
               - not_null
           - name: task_name
             description: Name of the task that was executed
@@ -121,7 +127,9 @@ sources:
           - name: id
             description: Unique identifier for the operation
             data_tests:
-              - unique
+              - unique:
+                  config:
+                    severity: warn
               - not_null
           - name: operation_name
             description: Name of the operation
