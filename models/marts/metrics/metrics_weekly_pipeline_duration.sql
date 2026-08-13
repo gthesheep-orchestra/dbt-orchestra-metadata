@@ -16,9 +16,6 @@ with pipeline_runs as (
         pr.duration_seconds
 
     from {{ ref('fct_pipeline_runs') }} as pr
-    inner join {{ ref('stg_orchestra__pipelines') }} as p
-        on pr.pipeline_id = p.pipeline_id
-        and not p.is_deleted
 
     where pr.completed_at_utc >= {{ days_ago(180) }}
       and pr.started_at_utc is not null
