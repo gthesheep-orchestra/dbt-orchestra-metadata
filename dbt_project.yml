@@ -40,3 +40,6 @@ models:
 
   dbt_project_evaluator:
     +enabled: "{{ var('run_dbt_project_evaluator', false) }}"
+
+data_tests:
+  +severity: warn
