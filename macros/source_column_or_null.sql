@@ -6,9 +6,9 @@
         {% if column_name | lower in source_column_names %}
             {{ column_name }}
         {% else %}
-            null
+            cast(null as {{ dbt.type_string() }})
         {% endif %}
     {% else %}
-        null
+        cast(null as {{ dbt.type_string() }})
     {% endif %}
 {% endmacro %}
