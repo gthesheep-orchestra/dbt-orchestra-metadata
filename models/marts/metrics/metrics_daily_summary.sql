@@ -12,7 +12,7 @@ with pipeline_runs as (
     where not is_in_progress
 
     {% if is_incremental() %}
-    and created_date >= (select max(summary_date) - interval '1 day' from {{ this }})
+    and created_date >= (select max(summary_date) - interval 1 day from {{ this }})
     {% endif %}
 
 ),
@@ -23,7 +23,7 @@ task_runs as (
     where not is_in_progress
 
     {% if is_incremental() %}
-    and created_date >= (select max(summary_date) - interval '1 day' from {{ this }})
+    and created_date >= (select max(summary_date) - interval 1 day from {{ this }})
     {% endif %}
 
 ),
@@ -33,7 +33,7 @@ operations as (
     select * from {{ ref('fct_operations') }}
 
     {% if is_incremental() %}
-    where created_date >= (select max(summary_date) - interval '1 day' from {{ this }})
+    where created_date >= (select max(summary_date) - interval 1 day from {{ this }})
     {% endif %}
 
 ),
