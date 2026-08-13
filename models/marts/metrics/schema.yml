@@ -322,8 +322,7 @@ models:
   - name: metrics_weekly_sao_adoption
     description: |
       Weekly state-aware orchestration (SAO) adoption for dbt Core tasks
-      (excluding matrix-mapped children, excluding deleted pipelines) across
-      all accounts.
+      (excluding matrix-mapped children) across all accounts.
       Rolling 180-day window, incrementally merged by week.
     meta:
       label: "Weekly SAO Adoption"
@@ -373,8 +372,7 @@ models:
 
   - name: metrics_weekly_pipeline_duration
     description: |
-      Weekly pipeline run duration (avg/p50/p90), excluding deleted pipelines,
-      across all accounts.
+      Weekly pipeline run duration (avg/p50/p90) across all accounts.
       Rolling 180-day window, incrementally merged by week.
     meta:
       label: "Weekly Pipeline Duration"

@@ -17,9 +17,6 @@ with task_runs as (
         tr.is_state_orchestration_enabled
 
     from {{ ref('fct_task_runs') }} as tr
-    inner join {{ ref('stg_orchestra__pipelines') }} as p
-        on tr.pipeline_id = p.pipeline_id
-        and not p.is_deleted
 
     where tr.integration = 'DBT_CORE'
       and tr.created_at_utc >= {{ days_ago(180) }}

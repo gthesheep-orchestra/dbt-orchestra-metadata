@@ -39,9 +39,8 @@ This dbt package transforms Orchestra platform metadata into an analytics-ready 
 
 ### Data Sources
 
-The package works with data ingested from the Orchestra API via [dlt](https://dlthub.com/) (data load tool). It processes five main data streams:
+The package works with data ingested from the Orchestra API via [dlt](https://dlthub.com/) (data load tool). It processes four main data streams:
 
-- **Pipelines**: Pipeline definition metadata (one row per pipeline, not per run) - used to filter out deleted pipelines
 - **Pipeline Runs**: Execution metadata for orchestrated pipelines including status, timing, and git context
 - **Task Runs**: Individual task executions within pipelines with integration-specific details
 - **Operations**: Granular operation-level details including rows affected, duration, and operation types (ingestion, transformation, testing, etc.)
@@ -187,14 +186,12 @@ erDiagram
 ### Layer Descriptions
 
 **Source Layer**: Raw Orchestra API data ingested via dlt
-- `pipelines` - Pipeline definitions (account_id, is_deleted)
 - `pipeline_runs` - Pipeline execution metadata
 - `task_runs` - Task execution within pipelines
 - `operations` - Granular operation details within tasks
 - `assets` - Data asset catalog with dependencies
 
 **Staging Layer**: Cleaned and standardized source data
-- `stg_orchestra__pipelines` - Pipeline definitions, used to filter out deleted pipelines
 - `stg_orchestra__pipeline_runs` - Renamed columns, calculated durations, status flags
 - `stg_orchestra__task_runs` - Enriched task data with references to pipelines
 - `stg_orchestra__operations` - Operation details with categorization flags
