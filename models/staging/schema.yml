@@ -29,6 +29,10 @@ models:
         description: Git branch the pipeline ran from
       - name: git_commit_sha
         description: Git commit SHA the pipeline ran from
+      - name: account_id
+        description: Identifier of the Orchestra account that owns this pipeline run
+        data_tests:
+          - not_null
       - name: created_at_utc
         description: Timestamp when the pipeline run was created
         data_tests:
@@ -67,6 +71,12 @@ models:
         data_tests:
           - unique
           - not_null
+      - name: unique_task_id
+        description: |
+          Stable identifier for the logical task, shared across retries/matrix-mapped
+          executions of the same task definition. Use for distinct task counts.
+        data_tests:
+          - not_null
       - name: pipeline_run_id
         description: ID of the parent pipeline run
         data_tests:
@@ -90,6 +100,18 @@ models:
         description: Status or error message
       - name: external_status
         description: Status from the external integration
+      - name: account_id
+        description: Identifier of the Orchestra account that owns this task run
+        data_tests:
+          - not_null
+      - name: is_matrix_parent
+        description: |
+          True if this row is the parent/aggregator row for a matrix-mapped task
+          rather than one of its mapped child executions.
+      - name: is_state_orchestration_enabled
+        description: |
+          Whether the task was run with Orchestra's state-aware orchestration (SAO)
+          enabled, parsed from `task_parameters.use_state_orchestration`.
       - name: created_at_utc
         description: Timestamp when the task run was created
         data_tests:
@@ -156,6 +178,10 @@ models:
         description: Integration that performed the operation
       - name: integration_job
         description: Specific job within the integration
+      - name: account_id
+        description: Identifier of the Orchestra account that owns this operation
+        data_tests:
+          - not_null
       - name: rows_affected
         description: Number of rows affected
       - name: duration_seconds
@@ -174,6 +200,8 @@ models:
         description: Whether the operation had warnings
       - name: is_cancelled
         description: Whether the operation was cancelled
+      - name: is_reused
+        description: Whether the operation reused a previous result instead of rebuilding (dbt node reuse)
       - name: is_ingestion_operation
         description: Whether this is a data ingestion operation
       - name: is_transformation_operation
@@ -229,6 +257,35 @@ models:
         description: Whether this is a BI/dashboard asset
       - name: is_query_asset
         description: Whether this is a query/dataset asset
+      - name: _dlt_load_id
+        description: dlt ingestion batch identifier
+      - name: _dlt_id
+        description: dlt unique row identifier
+
+  - name: stg_orchestra__pipelines
+    description: |
+      Staged pipeline definition data from Orchestra (one row per pipeline, not per run).
+      Used to filter out deleted pipelines when reporting on runs.
+    columns:
+      - name: pipeline_id
+        description: Unique identifier for the pipeline definition
+        data_tests:
+          - unique
+          - not_null
+      - name: account_id
+        description: Identifier of the Orchestra account that owns this pipeline
+        data_tests:
+          - not_null
+      - name: pipeline_name
+        description: Human-readable name of the pipeline
+      - name: is_deleted
+        description: True if the pipeline has been deleted (soft-delete flag)
+        data_tests:
+          - not_null
+      - name: created_at_utc
+        description: Timestamp when the pipeline was created
+      - name: updated_at_utc
+        description: Timestamp when the pipeline was last updated
       - name: _dlt_load_id
         description: dlt ingestion batch identifier
       - name: _dlt_id

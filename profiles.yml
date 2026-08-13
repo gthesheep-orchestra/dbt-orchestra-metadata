@@ -1,6 +1,11 @@
 orchestra_metadata:
   target: ci
   outputs:
+    dev:
+      type: duckdb
+      path: dev.duckdb
+      schema: main
+      threads: 4
     ci:
       type: bigquery
       method: service-account-json

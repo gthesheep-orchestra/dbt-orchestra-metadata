@@ -34,3 +34,45 @@ macros:
       - name: expression
         type: string
         description: SQL expression to aggregate.
+
+  - name: json_extract_bool
+    description: >
+      Extracts a boolean value from a JSON/string column at the given top-level
+      path key, using adapter-specific JSON functions.
+    arguments:
+      - name: column_name
+        type: string
+        description: SQL expression for the JSON (or JSON-as-string) column.
+      - name: path
+        type: string
+        description: Top-level key to extract, e.g. 'use_state_orchestration'.
+
+  - name: truncate_to_week
+    description: >
+      Truncates a date/timestamp expression to the start of its (Monday-starting)
+      week, in a warehouse-agnostic way.
+    arguments:
+      - name: column_name
+        type: string
+        description: SQL expression representing the date/timestamp to truncate.
+
+  - name: percentile_cont
+    description: >
+      Computes a continuous percentile of an expression as an aggregate (usable
+      directly in a GROUP BY), using adapter-specific SQL.
+    arguments:
+      - name: expression
+        type: string
+        description: SQL expression to compute the percentile over.
+      - name: fraction
+        type: float
+        description: Percentile fraction between 0 and 1 (e.g. 0.5 for median).
+
+  - name: days_ago
+    description: >
+      Returns a timestamp expression for "n days before now", in a
+      warehouse-agnostic way.
+    arguments:
+      - name: n
+        type: integer
+        description: Number of days to subtract from the current timestamp.

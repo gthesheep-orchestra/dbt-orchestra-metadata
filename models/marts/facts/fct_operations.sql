@@ -58,6 +58,7 @@ final as (
         o.operation_type,
         o.integration,
         o.integration_job,
+        o.account_id,
 
         -- context from parent entities
         tc.task_name,
@@ -88,6 +89,7 @@ final as (
         o.is_skipped,
         o.has_warning,
         o.is_cancelled,
+        o.is_reused,
 
         -- operation type flags
         o.is_ingestion_operation,
