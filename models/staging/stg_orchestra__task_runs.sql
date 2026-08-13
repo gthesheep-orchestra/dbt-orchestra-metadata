@@ -22,8 +22,10 @@ renamed as (
         account_id,
         matrix_parent as is_matrix_parent,
 
-        -- feature flags parsed from task_parameters
-        {{ json_extract_bool('task_parameters', 'use_state_orchestration') }} as is_state_orchestration_enabled,
+        -- feature flags parsed from task_parameters. dlt flattens the task_parameters
+        -- JSON object into task_parameters__<key> columns rather than keeping it as a
+        -- single JSON/string column, so read the flattened boolean directly.
+        {{ source_column_or_null(source('orchestra', 'task_runs'), 'task_parameters__use_state_orchestration') }} as is_state_orchestration_enabled,
 
         -- timestamps
         created_at as created_at_utc,

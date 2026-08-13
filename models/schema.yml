@@ -109,8 +109,13 @@ sources:
               executions when counting "how many tasks" ran.
           - name: task_parameters
             description: |
-              Task-level configuration payload (JSON), including feature flags such as
-              `use_state_orchestration`. Structure varies by integration/integration_job.
+              Task-level configuration payload. dlt flattens this nested JSON object
+              into individual `task_parameters__<key>` columns on this table (rather
+              than a single JSON/string column), so there is no bare `task_parameters`
+              column to select. Feature flags such as `use_state_orchestration` are
+              available as `task_parameters__use_state_orchestration`. The exact set of
+              flattened columns varies by integration/integration_job and may not be
+              present in every account's schema.
           - name: matrix_parent
             description: |
               True if this row is the parent/aggregator row for a matrix-mapped task rather
