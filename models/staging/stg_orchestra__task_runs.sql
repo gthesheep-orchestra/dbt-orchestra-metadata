@@ -10,7 +10,7 @@ renamed as (
         -- ids
         id as task_run_id,
         pipeline_run_id,
-        unique_task_id,
+        {{ source_column_or_null(source('orchestra', 'task_runs'), 'unique_task_id') }} as unique_task_id,
 
         -- attributes
         task_name,
