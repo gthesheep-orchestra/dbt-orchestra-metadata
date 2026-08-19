@@ -251,7 +251,13 @@ models:
       - name: size_gb
         description: Size in gigabytes
       - name: created_at_utc
-        description: Timestamp when created in the integration
+        description: |
+          Timestamp when created in the integration. Cast defensively from the raw
+          source value (see safe_cast_timestamp macro); a failure here means a row's
+          raw timestamp string failed to parse rather than being silently dropped
+          (project-wide test severity defaults to warn, see dbt_project.yml).
+        data_tests:
+          - not_null
       - name: is_database_object
         description: Whether this is a table or view
       - name: is_bi_asset
