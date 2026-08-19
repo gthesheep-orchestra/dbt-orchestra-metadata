@@ -10,9 +10,12 @@
 {% endmacro %}
 
 {% macro bigquery__timestamp_diff_seconds(end_col, start_col) %}
-    timestamp_diff({{ end_col }}, {{ start_col }}, second)
+    {#- dlt sometimes infers a timestamp-like source column as STRING (e.g. when
+       early-loaded rows were null or malformed), so cast both sides defensively
+       rather than assuming the source column already typed as TIMESTAMP. -#}
+    timestamp_diff(safe_cast({{ end_col }} as timestamp), safe_cast({{ start_col }} as timestamp), second)
 {% endmacro %}
 
 {% macro duckdb__timestamp_diff_seconds(end_col, start_col) %}
-    date_diff('second', {{ start_col }}, {{ end_col }})
+    date_diff('second', try_cast({{ start_col }} as timestamp), try_cast({{ end_col }} as timestamp))
 {% endmacro %}
