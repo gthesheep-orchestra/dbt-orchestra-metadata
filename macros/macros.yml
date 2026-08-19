@@ -14,6 +14,17 @@ macros:
         type: string
         description: SQL expression representing the start timestamp.
 
+  - name: safe_cast_timestamp
+    description: >
+      Casts an expression to a timestamp without erroring on values the warehouse
+      can't parse (e.g. a source column dlt inferred as STRING), using
+      adapter-specific safe/try-cast syntax. Returns NULL instead of raising for
+      unparseable input.
+    arguments:
+      - name: column_name
+        type: string
+        description: SQL expression to cast to a timestamp.
+
   - name: source_column_or_null
     description: >
       Returns the source column expression when it exists on the relation, or NULL

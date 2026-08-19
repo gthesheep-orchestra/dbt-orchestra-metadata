@@ -39,8 +39,10 @@ renamed as (
         rows_affected,
         operation_duration as duration_seconds,
 
-        -- timestamps
-        {{ created_at_expr }} as created_at_utc,
+        -- timestamps. dlt sometimes infers this as STRING instead of TIMESTAMP
+        -- (e.g. from early null/malformed loads), so cast defensively rather
+        -- than assume the source column is already typed as TIMESTAMP.
+        {{ safe_cast_timestamp(created_at_expr) }} as created_at_utc,
 
         -- status flags
         operation_status = 'SUCCEEDED' as is_successful,

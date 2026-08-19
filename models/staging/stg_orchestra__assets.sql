@@ -30,8 +30,10 @@ renamed as (
             when bytes is not null then bytes / 1073741824.0  -- 1024^3
         end as size_gb,
 
-        -- timestamps
-        created_in_integration as created_at_utc,
+        -- timestamps. dlt sometimes infers this as STRING instead of TIMESTAMP
+        -- (e.g. from early null/malformed loads), so cast defensively rather
+        -- than assume the source column is already typed as TIMESTAMP.
+        {{ safe_cast_timestamp('created_in_integration') }} as created_at_utc,
 
         -- asset type flags
         asset_type in ('TABLE', 'VIEW') as is_database_object,

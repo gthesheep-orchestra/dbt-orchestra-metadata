@@ -27,11 +27,13 @@ renamed as (
         -- single JSON/string column, so read the flattened boolean directly.
         {{ source_column_or_null(source('orchestra', 'task_runs'), 'task_parameters__use_state_orchestration') }} as is_state_orchestration_enabled,
 
-        -- timestamps
-        created_at as created_at_utc,
-        started_at as started_at_utc,
-        updated_at as updated_at_utc,
-        completed_at as completed_at_utc,
+        -- timestamps. dlt sometimes infers these as STRING instead of TIMESTAMP
+        -- (e.g. from early null/malformed loads), so cast defensively rather
+        -- than assume the source column is already typed as TIMESTAMP.
+        {{ safe_cast_timestamp('created_at') }} as created_at_utc,
+        {{ safe_cast_timestamp('started_at') }} as started_at_utc,
+        {{ safe_cast_timestamp('updated_at') }} as updated_at_utc,
+        {{ safe_cast_timestamp('completed_at') }} as completed_at_utc,
 
         -- calculated fields
         case
