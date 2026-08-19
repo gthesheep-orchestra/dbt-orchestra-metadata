@@ -13,9 +13,9 @@
     {#- dlt sometimes infers a timestamp-like source column as STRING (e.g. when
        early-loaded rows were null or malformed), so cast both sides defensively
        rather than assuming the source column already typed as TIMESTAMP. -#}
-    timestamp_diff(safe_cast({{ end_col }} as timestamp), safe_cast({{ start_col }} as timestamp), second)
+    timestamp_diff({{ safe_cast_timestamp(end_col) }}, {{ safe_cast_timestamp(start_col) }}, second)
 {% endmacro %}
 
 {% macro duckdb__timestamp_diff_seconds(end_col, start_col) %}
-    date_diff('second', try_cast({{ start_col }} as timestamp), try_cast({{ end_col }} as timestamp))
+    date_diff('second', {{ safe_cast_timestamp(start_col) }}, {{ safe_cast_timestamp(end_col) }})
 {% endmacro %}
