@@ -451,6 +451,42 @@ models:
           dimension:
             type: timestamp
             label: "Completed At"
+          metrics:
+            dbt_python_compute_minutes:
+              type: sum
+              label: "dbt & Python compute (minutes)"
+              description: >
+                Wall-clock compute minutes for completed DBT_CORE and PYTHON
+                task runs. Matches the product daily compute limit pool. CEIL
+                per task, clamped to the calendar day of completed_at (for runs
+                spanning midnight, only the portion within that day counts) and
+                floored at 0. Excludes matrix parent tasks, SKIPPED runs, and
+                FAILED/WARNING runs with an empty message.
+              sql: >
+                case
+                  when ${started_at_utc} is null then null
+                  when ${task_status} in ('FAILED', 'WARNING') and ${status_message} = '[]' then null
+                  else greatest(
+                    ceil(
+                      timestamp_diff(
+                        timestamp_trunc(${completed_at_utc}, second),
+                        greatest(
+                          timestamp_trunc(${started_at_utc}, second),
+                          timestamp_trunc(${completed_at_utc}, day)
+                        ),
+                        second
+                      ) / 60.0
+                    ),
+                    0
+                  )
+                end
+              filters:
+                - integration:
+                    - DBT_CORE
+                    - PYTHON
+                - is_matrix_parent: false
+                - task_status: "!SKIPPED"
+                - completed_at_utc: "!null"
       - name: created_date
         description: Date when the task run was created
         meta:
