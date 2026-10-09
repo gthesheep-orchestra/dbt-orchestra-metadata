@@ -22,7 +22,8 @@ models:
         description: Current status of the pipeline run
         data_tests:
           - accepted_values:
-              values: ['CREATED', 'RUNNING', 'SUCCEEDED', 'WARNING', 'FAILED', 'CANCELLING', 'CANCELLED']
+              arguments:
+                values: ['CREATED', 'RUNNING', 'SUCCEEDED', 'WARNING', 'FAILED', 'CANCELLING', 'CANCELLED']
       - name: triggered_by
         description: User or system that initiated the run
       - name: git_branch
@@ -81,17 +82,19 @@ models:
         description: ID of the parent pipeline run
         data_tests:
           - relationships:
-              to: ref('stg_orchestra__pipeline_runs')
-              field: pipeline_run_id
               config:
                 severity: warn
+              arguments:
+                to: ref('stg_orchestra__pipeline_runs')
+                field: pipeline_run_id
       - name: task_name
         description: Name of the task
       - name: task_status
         description: Current status of the task run
         data_tests:
           - accepted_values:
-              values: ['CREATED', 'SKIPPED', 'QUEUED', 'RUNNING', 'SUCCEEDED', 'WARNING', 'FAILED', 'CANCELLING', 'CANCELLED']
+              arguments:
+                values: ['CREATED', 'SKIPPED', 'QUEUED', 'RUNNING', 'SUCCEEDED', 'WARNING', 'FAILED', 'CANCELLING', 'CANCELLED']
       - name: integration
         description: Integration type (e.g., dbt, Fivetran)
       - name: integration_job
@@ -157,10 +160,11 @@ models:
         description: ID of the parent task run
         data_tests:
           - relationships:
-              to: ref('stg_orchestra__task_runs')
-              field: task_run_id
               config:
                 severity: warn
+              arguments:
+                to: ref('stg_orchestra__task_runs')
+                field: task_run_id
       - name: external_id
         description: External identifier from the integration
       - name: operation_name
@@ -169,12 +173,14 @@ models:
         description: Status of the operation
         data_tests:
           - accepted_values:
-              values: ['CREATED', 'QUEUED', 'RUNNING', 'SUCCEEDED', 'WARNING', 'FAILED', 'SKIPPED', 'UNKNOWN', 'CANCELLING', 'CANCELING', 'CANCELLED', 'CANCELED', 'REUSED']
+              arguments:
+                values: ['CREATED', 'QUEUED', 'RUNNING', 'SUCCEEDED', 'WARNING', 'FAILED', 'SKIPPED', 'UNKNOWN', 'CANCELLING', 'CANCELING', 'CANCELLED', 'CANCELED', 'REUSED']
       - name: operation_type
         description: Type of operation performed
         data_tests:
           - accepted_values:
-              values: ['AGGREGATION', 'ANALYSIS', 'DEPLOY', 'INGESTION', 'ITERATOR', 'MATERIALISATION', 'MATERIALIZATION', 'OPERATION', 'QUERY', 'REFRESH', 'REVERSE_ETL', 'SEED', 'SNAPSHOT', 'SOURCE', 'TEST', 'TEST_GROUP', 'TRIGGER', 'UNKNOWN']
+              arguments:
+                values: ['AGGREGATION', 'ANALYSIS', 'DEPLOY', 'INGESTION', 'ITERATOR', 'MATERIALISATION', 'MATERIALIZATION', 'OPERATION', 'QUERY', 'REFRESH', 'REVERSE_ETL', 'SEED', 'SNAPSHOT', 'SOURCE', 'TEST', 'TEST_GROUP', 'TRIGGER', 'UNKNOWN']
       - name: integration
         description: Integration that performed the operation
       - name: integration_job
@@ -235,7 +241,8 @@ models:
         description: Type of asset
         data_tests:
           - accepted_values:
-              values: ['CHART', 'DASHBOARD', 'DASHBOARD_VIEWS', 'DATASET', 'MATERIALIZED_VIEW', 'QUERIES', 'TABLE', 'UNKNOWN', 'VIEW', 'WORKBOOK']
+              arguments:
+                values: ['CHART', 'DASHBOARD', 'DASHBOARD_VIEWS', 'DATASET', 'MATERIALIZED_VIEW', 'QUERIES', 'TABLE', 'UNKNOWN', 'VIEW', 'WORKBOOK']
       - name: integration
         description: Integration where the asset resides
       - name: asset_status

@@ -1,6 +1,7 @@
 name: 'orchestra_metadata'
 version: '1.0.0'
 config-version: 2
+require-dbt-version: [">=1.10.6", "<3.0.0"]
 
 profile: 'orchestra_metadata'
 
@@ -43,3 +44,6 @@ models:
 
 data_tests:
   +severity: warn
+
+flags:
+  require_generic_test_arguments_property: true
