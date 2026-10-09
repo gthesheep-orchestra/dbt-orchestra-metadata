@@ -37,9 +37,10 @@ sources:
               Valid values: CREATED, RUNNING, SUCCEEDED, WARNING, FAILED, CANCELLING, CANCELLED
             data_tests:
               - accepted_values:
-                  values: ['CREATED', 'RUNNING', 'SUCCEEDED', 'WARNING', 'FAILED', 'CANCELLING', 'CANCELLED']
                   config:
                     severity: warn
+                  arguments:
+                    values: ['CREATED', 'RUNNING', 'SUCCEEDED', 'WARNING', 'FAILED', 'CANCELLING', 'CANCELLED']
           - name: triggered_by
             description: User or system that initiated the pipeline run
           - name: account_id
@@ -60,11 +61,11 @@ sources:
             description: dlt load identifier for tracking ingestion batches
           - name: _dlt_id
             description: dlt unique row identifier
-        freshness:
-          warn_after: {count: 24, period: hour}
-          error_after: {count: 48, period: hour}
-        loaded_at_field: _dlt_load_id
-
+        config:
+          freshness:
+            warn_after: {count: 24, period: hour}
+            error_after: {count: 48, period: hour}
+          loaded_at_field: _dlt_load_id
       - name: task_runs
         description: |
           Task run metadata from the Orchestra API `/task_runs` endpoint.
@@ -89,7 +90,8 @@ sources:
               Valid values: CREATED, SKIPPED, QUEUED, RUNNING, SUCCEEDED, WARNING, FAILED, CANCELLING, CANCELLED
             data_tests:
               - accepted_values:
-                  values: ['CREATED', 'SKIPPED', 'QUEUED', 'RUNNING', 'SUCCEEDED', 'WARNING', 'FAILED', 'CANCELLING', 'CANCELLED']
+                  arguments:
+                    values: ['CREATED', 'SKIPPED', 'QUEUED', 'RUNNING', 'SUCCEEDED', 'WARNING', 'FAILED', 'CANCELLING', 'CANCELLED']
           - name: integration
             description: Integration type used by this task (e.g., dbt, Fivetran, Snowflake)
           - name: integration_job
@@ -132,11 +134,11 @@ sources:
             description: dlt load identifier for tracking ingestion batches
           - name: _dlt_id
             description: dlt unique row identifier
-        freshness:
-          warn_after: {count: 24, period: hour}
-          error_after: {count: 48, period: hour}
-        loaded_at_field: _dlt_load_id
-
+        config:
+          freshness:
+            warn_after: {count: 24, period: hour}
+            error_after: {count: 48, period: hour}
+          loaded_at_field: _dlt_load_id
       - name: operations
         description: |
           Operation details from the Orchestra API `/operations` endpoint.
@@ -161,7 +163,8 @@ sources:
               Valid values: CREATED, QUEUED, RUNNING, SUCCEEDED, WARNING, FAILED, SKIPPED, UNKNOWN, CANCELLING, CANCELING, CANCELLED, CANCELED, REUSED
             data_tests:
               - accepted_values:
-                  values: ['CREATED', 'QUEUED', 'RUNNING', 'SUCCEEDED', 'WARNING', 'FAILED', 'SKIPPED', 'UNKNOWN', 'CANCELLING', 'CANCELING', 'CANCELLED', 'CANCELED', 'REUSED']
+                  arguments:
+                    values: ['CREATED', 'QUEUED', 'RUNNING', 'SUCCEEDED', 'WARNING', 'FAILED', 'SKIPPED', 'UNKNOWN', 'CANCELLING', 'CANCELING', 'CANCELLED', 'CANCELED', 'REUSED']
           - name: operation_type
             description: |
               Type of operation performed.
@@ -170,7 +173,8 @@ sources:
               SOURCE, TEST, TEST_GROUP, TRIGGER, UNKNOWN
             data_tests:
               - accepted_values:
-                  values: ['AGGREGATION', 'ANALYSIS', 'DEPLOY', 'INGESTION', 'ITERATOR', 'MATERIALISATION', 'MATERIALIZATION', 'OPERATION', 'QUERY', 'REFRESH', 'REVERSE_ETL', 'SEED', 'SNAPSHOT', 'SOURCE', 'TEST', 'TEST_GROUP', 'TRIGGER', 'UNKNOWN']
+                  arguments:
+                    values: ['AGGREGATION', 'ANALYSIS', 'DEPLOY', 'INGESTION', 'ITERATOR', 'MATERIALISATION', 'MATERIALIZATION', 'OPERATION', 'QUERY', 'REFRESH', 'REVERSE_ETL', 'SEED', 'SNAPSHOT', 'SOURCE', 'TEST', 'TEST_GROUP', 'TRIGGER', 'UNKNOWN']
           - name: integration
             description: Integration type that performed the operation
           - name: integration_job
@@ -191,11 +195,11 @@ sources:
             description: dlt load identifier for tracking ingestion batches
           - name: _dlt_id
             description: dlt unique row identifier
-        freshness:
-          warn_after: {count: 24, period: hour}
-          error_after: {count: 48, period: hour}
-        loaded_at_field: _dlt_load_id
-
+        config:
+          freshness:
+            warn_after: {count: 24, period: hour}
+            error_after: {count: 48, period: hour}
+          loaded_at_field: _dlt_load_id
       - name: assets
         description: |
           Asset metadata from the Orchestra API `/assets` endpoint.
@@ -218,7 +222,8 @@ sources:
               Valid values: CHART, DASHBOARD, DASHBOARD_VIEWS, DATASET, QUERIES, TABLE, UNKNOWN, VIEW, WORKBOOK, MATERIALIZED_VIEW
             data_tests:
               - accepted_values:
-                  values: ['CHART', 'DASHBOARD', 'DASHBOARD_VIEWS', 'DATASET', 'QUERIES', 'TABLE', 'UNKNOWN', 'VIEW', 'WORKBOOK', 'MATERIALIZED_VIEW']
+                  arguments:
+                    values: ['CHART', 'DASHBOARD', 'DASHBOARD_VIEWS', 'DATASET', 'QUERIES', 'TABLE', 'UNKNOWN', 'VIEW', 'WORKBOOK', 'MATERIALIZED_VIEW']
           - name: integration
             description: Integration where the asset resides
           - name: external_id
