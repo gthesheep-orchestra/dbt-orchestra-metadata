@@ -25,6 +25,8 @@ jobs:
         with:
           api_key: ${{ secrets.ORCHESTRA_API_KEY }}
           pipeline_id: orchestra_metadata
+          # Branch of the pipeline YAML repo (data-dbt-bigquery); dbt runs on git_branch below
+          branch: main
           poll_interval: 20
           environment: CI
           task_ids: 9e7c692c-b686-4fe2-a406-e7123fa1ef1c
