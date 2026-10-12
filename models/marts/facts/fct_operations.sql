@@ -76,6 +76,9 @@ final as (
         o.rows_affected,
         o.duration_seconds,
         o.duration_seconds / 60.0 as duration_minutes,
+        o.warehouse_cost_amount,
+        o.warehouse_cost_units,
+        o.cost_warehouse,
 
         -- rows per second throughput
         case
