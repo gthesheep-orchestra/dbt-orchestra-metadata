@@ -65,7 +65,7 @@ sources:
           freshness:
             warn_after: {count: 24, period: hour}
             error_after: {count: 48, period: hour}
-          loaded_at_field: _dlt_load_id
+          loaded_at_field: updated_at
       - name: task_runs
         description: |
           Task run metadata from the Orchestra API `/task_runs` endpoint.
@@ -138,7 +138,7 @@ sources:
           freshness:
             warn_after: {count: 24, period: hour}
             error_after: {count: 48, period: hour}
-          loaded_at_field: _dlt_load_id
+          loaded_at_field: updated_at
       - name: operations
         description: |
           Operation details from the Orchestra API `/operations` endpoint.
@@ -199,7 +199,7 @@ sources:
           freshness:
             warn_after: {count: 24, period: hour}
             error_after: {count: 48, period: hour}
-          loaded_at_field: _dlt_load_id
+          loaded_at_field: inserted_at
       - name: assets
         description: |
           Asset metadata from the Orchestra API `/assets` endpoint.
