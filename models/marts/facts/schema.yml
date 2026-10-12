@@ -941,6 +941,32 @@ models:
                 type: average
                 label: "Avg Operation Duration (min)"
                 round: 2
+      - name: warehouse_cost_amount
+        description: |
+          Warehouse usage for the operation, in `warehouse_cost_units`. Units differ
+          per warehouse, so never sum this across units.
+        config:
+          meta:
+            metrics:
+              bigquery_tb_processed:
+                type: sum
+                label: "BigQuery TB Processed"
+                description: Terabytes processed by BigQuery queries the operations ran
+                sql: "${warehouse_cost_amount} / 1e12"
+                round: 3
+                filters:
+                  - warehouse_cost_units: "Bytes"
+              snowflake_credits_used:
+                type: sum
+                label: "Snowflake Credits Used"
+                description: Snowflake credits consumed by the operations
+                round: 4
+                filters:
+                  - warehouse_cost_units: "Credits"
+      - name: warehouse_cost_units
+        description: Units of `warehouse_cost_amount` (e.g. Bytes, Credits)
+      - name: cost_warehouse
+        description: Warehouse the usage was billed to (e.g. GCP_BIG_QUERY, SNOWFLAKE)
       - name: rows_per_second
         description: Throughput in rows per second
         config:

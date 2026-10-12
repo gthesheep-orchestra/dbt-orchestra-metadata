@@ -185,6 +185,14 @@ sources:
             description: Number of rows affected by the operation
           - name: operation_duration
             description: Duration of the operation in seconds
+          - name: raw_cost_amount
+            description: |
+              Warehouse usage attributed to the operation, in the units given by
+              `raw_cost_units` (e.g. `Bytes` for BigQuery, `Credits` for Snowflake).
+          - name: raw_cost_units
+            description: Units of `raw_cost_amount`
+          - name: raw_cost_integration
+            description: Warehouse the usage was billed to (e.g. GCP_BIG_QUERY, SNOWFLAKE)
           - name: task_run_id
             description: ID of the parent task run (UUID4)
           - name: external_id

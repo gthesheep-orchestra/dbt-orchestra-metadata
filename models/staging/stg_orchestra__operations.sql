@@ -39,6 +39,12 @@ renamed as (
         rows_affected,
         operation_duration as duration_seconds,
 
+        -- warehouse usage, in native units that differ per warehouse
+        -- (e.g. BigQuery bytes, Snowflake credits)
+        cast({{ source_column_or_null(source('orchestra', 'operations'), 'raw_cost_amount') }} as {{ dbt.type_float() }}) as warehouse_cost_amount,
+        {{ source_column_or_null(source('orchestra', 'operations'), 'raw_cost_units') }} as warehouse_cost_units,
+        {{ source_column_or_null(source('orchestra', 'operations'), 'raw_cost_integration') }} as cost_warehouse,
+
         -- timestamps. dlt sometimes infers this as STRING instead of TIMESTAMP
         -- (e.g. from early null/malformed loads), so cast defensively rather
         -- than assume the source column is already typed as TIMESTAMP.
