@@ -35,3 +35,19 @@ jobs:
               "dbt_command": " build -s state:modified+ --defer --state latest_production",
               "git_branch": "${{ github.head_ref }}"
             }
+
+  dbt-v2-parse:
+    runs-on: ubuntu-latest
+    env:
+      DBT_V2: uvx --python 3.12 --prerelease allow --from "dbt-core>=2.0.0a1,<3" dbt
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+
+      - name: Parse with dbt v2
+        run: |
+          $DBT_V2 deps --target dev
+          $DBT_V2 parse --target dev
