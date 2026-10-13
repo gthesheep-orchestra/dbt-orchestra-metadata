@@ -39,7 +39,7 @@ jobs:
   dbt-v2-parse:
     runs-on: ubuntu-latest
     env:
-      DBT_V2: uvx --python 3.12 --prerelease allow --from "dbt-core>=2.0.0a1,<3" dbt
+      DBT_V2: uvx --python 3.12 --prerelease allow --from dbt-core>=2.0.0a1,<3 dbt
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
