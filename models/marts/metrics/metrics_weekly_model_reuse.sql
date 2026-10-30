@@ -7,8 +7,7 @@
 }}
 
 -- Weekly dbt model build vs. reuse stats across all accounts.
--- Always recomputes a trailing 30-day window (merged into history week-by-week)
--- so late-arriving operations keep refining the most recent weeks.
+-- Builds a trailing 30-day window, then recomputes the previous and current week.
 
 with model_ops as (
 
@@ -22,7 +21,11 @@ with model_ops as (
 
     where o.integration = 'DBT_CORE'
       and o.operation_type = 'MATERIALISATION'
+    {% if is_incremental() %}
+      and o.created_date >= (select max(run_week) - interval 7 day from {{ this }})
+    {% else %}
       and o.created_at_utc >= {{ days_ago(30) }}
+    {% endif %}
 
 ),
 

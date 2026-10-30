@@ -7,7 +7,7 @@
 }}
 
 -- Weekly pipeline run duration (avg/p50/p90) across all accounts.
--- Always recomputes a trailing 180-day window.
+-- Builds a trailing 180-day window, then recomputes the previous and current week.
 
 with pipeline_runs as (
 
@@ -17,8 +17,12 @@ with pipeline_runs as (
 
     from {{ ref('fct_pipeline_runs') }} as pr
 
-    where pr.completed_at_utc >= {{ days_ago(180) }}
-      and pr.started_at_utc is not null
+    where pr.started_at_utc is not null
+    {% if is_incremental() %}
+      and pr.completed_date >= (select max(run_week) - interval 7 day from {{ this }})
+    {% else %}
+      and pr.completed_at_utc >= {{ days_ago(180) }}
+    {% endif %}
 
 ),
 
