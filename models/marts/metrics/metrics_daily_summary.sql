@@ -48,6 +48,10 @@ incident_days as (
         cast(null as {{ dbt.type_float() }}) as time_to_resolve_seconds
     from {{ ref('fct_incidents') }}
 
+    {% if is_incremental() %}
+    where created_date >= (select max(summary_date) - interval 1 day from {{ this }})
+    {% endif %}
+
     union all
 
     select
@@ -57,6 +61,10 @@ incident_days as (
         time_to_resolve_seconds
     from {{ ref('fct_incidents') }}
     where is_resolved
+
+    {% if is_incremental() %}
+        and resolved_date >= (select max(summary_date) - interval 1 day from {{ this }})
+    {% endif %}
 
 ),
 
@@ -147,11 +155,6 @@ incidents_daily as (
         avg(time_to_resolve_seconds) as avg_time_to_resolve_seconds
 
     from incident_days
-
-    {% if is_incremental() %}
-    where summary_date >= (select max(summary_date) - interval 1 day from {{ this }})
-    {% endif %}
-
     group by 1
 
 ),

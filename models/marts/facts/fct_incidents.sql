@@ -1,14 +1,20 @@
 {{
     config(
-        materialized='table'
+        materialized='incremental',
+        unique_key='incident_id',
+        incremental_strategy='merge',
+        on_schema_change='append_new_columns'
     )
 }}
-
--- A table, not incremental: incidents are a full snapshot and change status after opening.
 
 with incidents as (
 
     select * from {{ ref('stg_orchestra__incidents') }}
+
+    -- Any change to an incident, including a new timeline event, moves its updated_at on.
+    {% if is_incremental() %}
+    where updated_at_utc > (select max(updated_at_utc) from {{ this }})
+    {% endif %}
 
 ),
 
@@ -27,6 +33,7 @@ first_pipeline_events as (
             row_number() over (partition by incident_id order by inserted_at_utc) as event_number
         from {{ ref('stg_orchestra__incident_events') }}
         where pipeline_id is not null
+            and incident_id in (select incident_id from incidents)
     ) as pipeline_events
     where event_number = 1
 

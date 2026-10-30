@@ -1078,8 +1078,7 @@ models:
   - name: fct_incidents
     description: |
       Fact table of Orchestra incidents, linked to the pipeline run that first raised
-      each one. Rebuilt in full on every run, since incidents change status after
-      they're opened.
+      each one. Incrementally loaded based on updated_at_utc timestamp.
       Grain: One row per incident (merged incidents excluded).
     columns:
       - name: incident_id
