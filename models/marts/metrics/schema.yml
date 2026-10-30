@@ -320,7 +320,7 @@ models:
     description: |
       Weekly dbt model build vs. reuse stats (dbt Core, MATERIALISATION operations)
       across all accounts.
-      Rolling 30-day window, incrementally merged by week.
+      Built from a trailing 30-day window; incremental runs recompute the previous and current week.
     columns:
       - name: run_week
         description: The Monday-starting week of the summary
@@ -388,7 +388,7 @@ models:
     description: |
       Weekly state-aware orchestration (SAO) adoption for dbt Core tasks
       (excluding matrix-mapped children) across all accounts.
-      Rolling 180-day window, incrementally merged by week.
+      Built from a trailing 180-day window; incremental runs recompute the previous and current week.
     columns:
       - name: run_week
         description: The Monday-starting week of the summary
@@ -444,7 +444,7 @@ models:
   - name: metrics_weekly_pipeline_duration
     description: |
       Weekly pipeline run duration (avg/p50/p90) across all accounts.
-      Rolling 180-day window, incrementally merged by week.
+      Built from a trailing 180-day window; incremental runs recompute the previous and current week.
     columns:
       - name: run_week
         description: The Monday-starting week of the summary

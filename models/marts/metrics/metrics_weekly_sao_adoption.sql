@@ -7,7 +7,7 @@
 }}
 
 -- Weekly state-aware orchestration (SAO) adoption for dbt Core tasks across
--- all accounts. Always recomputes a trailing 180-day window.
+-- all accounts. Builds a trailing 180-day window, then recomputes the previous and current week.
 
 with task_runs as (
 
@@ -19,8 +19,12 @@ with task_runs as (
     from {{ ref('fct_task_runs') }} as tr
 
     where tr.integration = 'DBT_CORE'
-      and tr.created_at_utc >= {{ days_ago(180) }}
       and not tr.is_matrix_parent
+    {% if is_incremental() %}
+      and tr.created_date >= (select max(run_week) - interval 7 day from {{ this }})
+    {% else %}
+      and tr.created_at_utc >= {{ days_ago(180) }}
+    {% endif %}
 
 ),
 
