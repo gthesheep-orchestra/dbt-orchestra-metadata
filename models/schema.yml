@@ -252,3 +252,82 @@ sources:
             description: dlt load identifier for tracking ingestion batches
           - name: _dlt_id
             description: dlt unique row identifier
+      - name: incidents
+        description: |
+          Incidents from the Orchestra API `/incidents` endpoint, archived ones included.
+          Reloaded as a full snapshot on every run. Incidents merged into another land
+          in the `incidents__children` child table instead, so this table holds one row
+          per incident as the incidents list shows it.
+        columns:
+          - name: incident_id
+            description: Unique identifier for the incident (UUID4)
+            data_tests:
+              - unique
+              - not_null
+          - name: name
+            description: Name of the incident
+          - name: status
+            description: |
+              Current status of the incident.
+              Valid values: OPEN, INVESTIGATING, RESOLVED, DISMISSED
+            data_tests:
+              - accepted_values:
+                  arguments:
+                    values: ['OPEN', 'INVESTIGATING', 'RESOLVED', 'DISMISSED']
+          - name: severity
+            description: |
+              Severity of the incident.
+              Valid values: CRITICAL, HIGH, MEDIUM, LOW
+            data_tests:
+              - accepted_values:
+                  arguments:
+                    values: ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW']
+          - name: assignee
+            description: User the incident is assigned to
+          - name: monitor_id
+            description: Monitor that raised the incident, if one did (UUID4)
+          - name: created_at
+            description: Timestamp when the incident was opened (ISO 8601)
+          - name: updated_at
+            description: Timestamp of the last change to the incident or its timeline (ISO 8601)
+          - name: resolved_at
+            description: Timestamp when the incident was resolved or dismissed (ISO 8601)
+          - name: archived_at
+            description: Timestamp when the incident was archived (ISO 8601)
+          - name: _dlt_load_id
+            description: dlt load identifier for tracking ingestion batches
+          - name: _dlt_id
+            description: dlt unique row identifier
+      - name: incident_events
+        description: |
+          Incident timelines from the Orchestra API `/incidents/{id}/events` endpoint.
+          Events that came from a pipeline run carry the pipeline, pipeline run and
+          task run they came from.
+        columns:
+          - name: incident_event_id
+            description: Unique identifier for the event (UUID4)
+            data_tests:
+              - unique
+              - not_null
+          - name: incident_id
+            description: Incident the event belongs to (UUID4)
+            data_tests:
+              - not_null
+          - name: event_type
+            description: Kind of event (e.g. CREATED, EVENT, STATUS_CHANGED, ASSIGNED)
+          - name: actor_type
+            description: Who caused the event (AI, API, OTHER, SYSTEM, USER)
+          - name: trigger_type
+            description: Signal that raised the event (ANOMALY, EXTERNAL, FAILED, WARNING)
+          - name: pipeline_id
+            description: Pipeline the event came from (UUID4)
+          - name: pipeline_run_id
+            description: Pipeline run the event came from (UUID4)
+          - name: task_run_id
+            description: Task run the event came from (UUID4)
+          - name: inserted_at
+            description: Timestamp when the event was added to the timeline (ISO 8601)
+          - name: _dlt_load_id
+            description: dlt load identifier for tracking ingestion batches
+          - name: _dlt_id
+            description: dlt unique row identifier

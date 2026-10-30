@@ -1075,3 +1075,182 @@ models:
             sql_on: "${fct_operations.integration_key} = ${dim_integrations.integration_key}"
           - join: fct_task_runs
             sql_on: "${fct_operations.task_run_id} = ${fct_task_runs.task_run_id}"
+  - name: fct_incidents
+    description: |
+      Fact table of Orchestra incidents, linked to the pipeline run that first raised
+      each one. Rebuilt in full on every run, since incidents change status after
+      they're opened.
+      Grain: One row per incident (merged incidents excluded).
+    columns:
+      - name: incident_id
+        description: Unique identifier for the incident
+        data_tests:
+          - unique
+          - not_null
+        config:
+          meta:
+            dimension:
+              type: string
+              label: "Incident ID"
+              hidden: true
+            metrics:
+              incidents_count:
+                type: count_distinct
+                label: "Incidents"
+      - name: pipeline_id
+        description: Pipeline whose run first raised the incident, null if no pipeline did
+        data_tests:
+          - relationships:
+              config:
+                severity: warn
+              arguments:
+                to: ref('dim_pipelines')
+                field: pipeline_id
+        config:
+          meta:
+            dimension:
+              type: string
+              label: "Pipeline ID"
+      - name: pipeline_run_id
+        description: Pipeline run that first raised the incident
+        config:
+          meta:
+            dimension:
+              type: string
+              label: "Pipeline Run ID"
+              hidden: true
+      - name: monitor_id
+        description: Monitor that raised the incident, if one did
+        config:
+          meta:
+            dimension:
+              type: string
+              label: "Monitor ID"
+              hidden: true
+      - name: incident_name
+        description: Name of the incident
+        config:
+          meta:
+            dimension:
+              type: string
+              label: "Incident Name"
+      - name: incident_status
+        description: Current status of the incident
+        config:
+          meta:
+            dimension:
+              type: string
+              label: "Incident Status"
+      - name: severity
+        description: Severity of the incident
+        config:
+          meta:
+            dimension:
+              type: string
+              label: "Severity"
+      - name: assignee
+        description: User the incident is assigned to
+        config:
+          meta:
+            dimension:
+              type: string
+              label: "Assignee"
+      - name: pipeline_name
+        description: Name of the pipeline whose run first raised the incident
+        config:
+          meta:
+            dimension:
+              type: string
+              label: "Pipeline Name"
+      - name: created_at_utc
+        description: Timestamp when the incident was opened
+        data_tests:
+          - not_null
+        config:
+          meta:
+            dimension:
+              type: timestamp
+              label: "Opened At"
+              time_intervals: ['DAY', 'WEEK', 'MONTH', 'QUARTER', 'YEAR']
+      - name: updated_at_utc
+        description: Timestamp of the last change to the incident or its timeline
+        config:
+          meta:
+            dimension:
+              type: timestamp
+              label: "Updated At"
+      - name: resolved_at_utc
+        description: Timestamp when the incident was resolved or dismissed
+        config:
+          meta:
+            dimension:
+              type: timestamp
+              label: "Resolved At"
+      - name: archived_at_utc
+        description: Timestamp when the incident was archived
+        config:
+          meta:
+            dimension:
+              type: timestamp
+              label: "Archived At"
+      - name: created_date
+        description: Date when the incident was opened
+        config:
+          meta:
+            dimension:
+              type: date
+              label: "Opened Date"
+      - name: resolved_date
+        description: Date when the incident was resolved or dismissed
+        config:
+          meta:
+            dimension:
+              type: date
+              label: "Resolved Date"
+      - name: time_to_resolve_seconds
+        description: Seconds from opening to resolution, for resolved incidents only
+        data_tests:
+          - valid_duration
+        config:
+          meta:
+            metrics:
+              mean_time_to_resolve_seconds:
+                type: average
+                label: "Mean Time to Resolve (sec)"
+                round: 0
+      - name: is_open
+        description: Whether the incident is open or being investigated
+        config:
+          meta:
+            dimension:
+              type: boolean
+              label: "Is Open"
+      - name: is_resolved
+        description: Whether the incident was resolved
+        config:
+          meta:
+            dimension:
+              type: boolean
+              label: "Is Resolved"
+      - name: is_dismissed
+        description: Whether the incident was dismissed
+        config:
+          meta:
+            dimension:
+              type: boolean
+              label: "Is Dismissed"
+      - name: is_archived
+        description: Whether the incident was archived
+        config:
+          meta:
+            dimension:
+              type: boolean
+              label: "Is Archived"
+      - name: _dlt_load_id
+        description: dlt ingestion batch identifier
+      - name: _dlt_id
+        description: dlt unique row identifier
+    config:
+      meta:
+        label: "Incidents"
+        group: "Orchestra Metadata"
