@@ -104,6 +104,31 @@ models:
             dimension:
               type: string
               label: "Most Common Branch"
+      - name: total_incidents
+        description: Number of incidents first raised by a run of this pipeline
+        config:
+          meta:
+            metrics:
+              total_pipeline_incidents:
+                type: sum
+                label: "Total Incidents"
+      - name: open_incidents
+        description: Number of this pipeline's incidents that are open or being investigated
+        config:
+          meta:
+            metrics:
+              open_pipeline_incidents:
+                type: sum
+                label: "Open Incidents"
+      - name: avg_time_to_resolve_seconds
+        description: Mean time to resolve this pipeline's resolved incidents, in seconds
+        config:
+          meta:
+            metrics:
+              avg_pipeline_time_to_resolve_seconds:
+                type: average
+                label: "Avg Time to Resolve (sec)"
+                round: 0
       - name: updated_at
         description: Timestamp when this record was last updated
 

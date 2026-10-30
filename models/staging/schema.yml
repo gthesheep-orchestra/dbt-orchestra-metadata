@@ -281,3 +281,82 @@ models:
         description: dlt ingestion batch identifier
       - name: _dlt_id
         description: dlt unique row identifier
+  - name: stg_orchestra__incidents
+    description: |
+      Staged incidents from Orchestra, one row per incident (merged incidents excluded).
+    columns:
+      - name: incident_id
+        description: Unique identifier for the incident
+        data_tests:
+          - unique
+          - not_null
+      - name: monitor_id
+        description: Monitor that raised the incident, if one did
+      - name: incident_name
+        description: Name of the incident
+      - name: incident_status
+        description: Current status of the incident
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['OPEN', 'INVESTIGATING', 'RESOLVED', 'DISMISSED']
+      - name: severity
+        description: Severity of the incident
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW']
+      - name: assignee
+        description: User the incident is assigned to
+      - name: created_at_utc
+        description: Timestamp when the incident was opened
+        data_tests:
+          - not_null
+      - name: updated_at_utc
+        description: Timestamp of the last change to the incident or its timeline
+      - name: resolved_at_utc
+        description: Timestamp when the incident was resolved or dismissed
+      - name: archived_at_utc
+        description: Timestamp when the incident was archived
+      - name: is_open
+        description: Whether the incident is open or being investigated
+      - name: is_resolved
+        description: Whether the incident was resolved
+      - name: is_dismissed
+        description: Whether the incident was dismissed
+      - name: _dlt_load_id
+        description: dlt ingestion batch identifier
+      - name: _dlt_id
+        description: dlt unique row identifier
+
+  - name: stg_orchestra__incident_events
+    description: |
+      Staged incident timeline events from Orchestra.
+    columns:
+      - name: incident_event_id
+        description: Unique identifier for the event
+        data_tests:
+          - unique
+          - not_null
+      - name: incident_id
+        description: Incident the event belongs to
+        data_tests:
+          - not_null
+      - name: pipeline_id
+        description: Pipeline the event came from
+      - name: pipeline_run_id
+        description: Pipeline run the event came from
+      - name: task_run_id
+        description: Task run the event came from
+      - name: event_type
+        description: Kind of event
+      - name: actor_type
+        description: Who caused the event
+      - name: trigger_type
+        description: Signal that raised the event
+      - name: inserted_at_utc
+        description: Timestamp when the event was added to the timeline
+      - name: _dlt_load_id
+        description: dlt ingestion batch identifier
+      - name: _dlt_id
+        description: dlt unique row identifier

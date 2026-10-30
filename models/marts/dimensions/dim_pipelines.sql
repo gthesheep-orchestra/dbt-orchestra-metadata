@@ -46,10 +46,23 @@ pipeline_stats as (
     where not is_in_progress
     group by 1, 2
 
+),
+
+incident_stats as (
+
+    select
+        pipeline_id,
+        count(*) as total_incidents,
+        sum(case when is_open then 1 else 0 end) as open_incidents,
+        avg(time_to_resolve_seconds) as avg_time_to_resolve_seconds
+    from {{ ref('fct_incidents') }}
+    where pipeline_id is not null
+    group by 1
+
 )
 
 select
-    pipeline_id,
+    pipeline_stats.pipeline_id,
     pipeline_name,
     total_runs,
     successful_runs,
@@ -63,6 +76,10 @@ select
     success_rate_pct,
     most_common_trigger,
     most_common_branch,
+    coalesce(incident_stats.total_incidents, 0) as total_incidents,
+    coalesce(incident_stats.open_incidents, 0) as open_incidents,
+    incident_stats.avg_time_to_resolve_seconds,
     current_timestamp as updated_at
 
 from pipeline_stats
+left join incident_stats on pipeline_stats.pipeline_id = incident_stats.pipeline_id

@@ -272,6 +272,33 @@ models:
                 type: sum
                 label: "Total Operation Duration (sec)"
 
+      # Incident metrics
+      - name: incidents_opened
+        description: Incidents opened on this date
+        config:
+          meta:
+            metrics:
+              daily_incidents_opened:
+                type: sum
+                label: "Incidents Opened"
+      - name: incidents_resolved
+        description: Incidents resolved on this date
+        config:
+          meta:
+            metrics:
+              daily_incidents_resolved:
+                type: sum
+                label: "Incidents Resolved"
+      - name: avg_time_to_resolve_seconds
+        description: Mean time to resolve the incidents resolved on this date, in seconds
+        config:
+          meta:
+            metrics:
+              trend_avg_time_to_resolve:
+                type: average
+                label: "Trend Avg Time to Resolve (sec)"
+                round: 0
+
       # Computed metrics
       - name: avg_tasks_per_pipeline
         description: Average number of tasks per pipeline run

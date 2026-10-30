@@ -39,12 +39,13 @@ This dbt package transforms Orchestra platform metadata into an analytics-ready 
 
 ### Data Sources
 
-The package works with data ingested from the Orchestra API via [dlt](https://dlthub.com/) (data load tool). It processes four main data streams:
+The package works with data ingested from the Orchestra API via [dlt](https://dlthub.com/) (data load tool). It processes these data streams:
 
 - **Pipeline Runs**: Execution metadata for orchestrated pipelines including status, timing, and git context
 - **Task Runs**: Individual task executions within pipelines with integration-specific details
 - **Operations**: Granular operation-level details including rows affected, duration, and operation types (ingestion, transformation, testing, etc.)
 - **Assets**: Data asset catalog tracking tables, views, dashboards, and their upstream/downstream dependencies
+- **Incidents**: Incidents raised on failures and anomalies, with their severity, status, and timelines
 
 `pipeline_runs`, `task_runs`, and `operations` also carry an `account_id`, scoping each row to the Orchestra account that owns it.
 
@@ -175,12 +176,24 @@ erDiagram
         float rows_per_second
     }
 
+    fct_incidents {
+        string incident_id PK
+        string pipeline_id FK
+        string pipeline_run_id FK
+        string incident_status
+        string severity
+        timestamp created_at_utc
+        timestamp resolved_at_utc
+        int time_to_resolve_seconds
+    }
+
     %% Fact to Dimension Relationships
     fct_pipeline_runs }o--|| dim_pipelines : "pipeline_id"
     fct_task_runs }o--|| fct_pipeline_runs : "pipeline_run_id"
     fct_task_runs }o--|| dim_integrations : "integration_key"
     fct_operations }o--|| fct_task_runs : "task_run_id"
     fct_operations }o--|| dim_integrations : "integration_key"
+    fct_incidents }o--o| dim_pipelines : "pipeline_id"
 ```
 
 ### Layer Descriptions
@@ -190,16 +203,20 @@ erDiagram
 - `task_runs` - Task execution within pipelines
 - `operations` - Granular operation details within tasks
 - `assets` - Data asset catalog with dependencies
+- `incidents` - Incidents, one row each (merged incidents excluded)
+- `incident_events` - Incident timelines, pointing at the pipeline runs that raised them
 
 **Staging Layer**: Cleaned and standardized source data
 - `stg_orchestra__pipeline_runs` - Renamed columns, calculated durations, status flags
 - `stg_orchestra__task_runs` - Enriched task data with references to pipelines
 - `stg_orchestra__operations` - Operation details with categorization flags
 - `stg_orchestra__assets` - Processed asset metadata with dependency counts
+- `stg_orchestra__incidents` - Incidents with status flags
+- `stg_orchestra__incident_events` - Incident timeline events
 
 **Marts Layer**:
 - **Dimensions**: Reference data for analytics
-  - `dim_pipelines` - Pipeline definitions with aggregated stats
+  - `dim_pipelines` - Pipeline definitions with aggregated run and incident stats
   - `dim_integrations` - Integration + job combinations with metrics
   - `dim_assets` - Asset catalog with dependency analysis
 
@@ -207,9 +224,10 @@ erDiagram
   - `fct_pipeline_runs` - Pipeline execution events with task rollups
   - `fct_task_runs` - Task execution events with operation rollups
   - `fct_operations` - Granular operation events with throughput metrics
+  - `fct_incidents` - Incidents with the pipeline run that first raised them and time to resolve
 
 - **Metrics**: Pre-aggregated marts for dashboarding (see `models/marts/metrics/schema.yml` for the full `meta.metrics` -> Lightdash mapping)
-  - `metrics_daily_summary` - Daily pipeline/task/operation rollup
+  - `metrics_daily_summary` - Daily pipeline/task/operation/incident rollup
   - `metrics_weekly_model_reuse` - Weekly dbt model build vs. reuse stats + estimated compute time saved
   - `metrics_weekly_sao_adoption` - Weekly state-aware orchestration (SAO) adoption for dbt Core tasks
   - `metrics_weekly_pipeline_duration` - Weekly pipeline run duration (avg/p50/p90)

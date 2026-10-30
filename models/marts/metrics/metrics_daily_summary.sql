@@ -38,6 +38,36 @@ operations as (
 
 ),
 
+-- An incident counts on the day it was opened and again on the day it was resolved.
+incident_days as (
+
+    select
+        created_date as summary_date,
+        1 as opened,
+        0 as resolved,
+        cast(null as {{ dbt.type_float() }}) as time_to_resolve_seconds
+    from {{ ref('fct_incidents') }}
+
+    {% if is_incremental() %}
+    where created_date >= (select max(summary_date) - interval 1 day from {{ this }})
+    {% endif %}
+
+    union all
+
+    select
+        resolved_date as summary_date,
+        0 as opened,
+        1 as resolved,
+        time_to_resolve_seconds
+    from {{ ref('fct_incidents') }}
+    where is_resolved
+
+    {% if is_incremental() %}
+        and resolved_date >= (select max(summary_date) - interval 1 day from {{ this }})
+    {% endif %}
+
+),
+
 pipeline_daily as (
 
     select
@@ -116,10 +146,23 @@ operations_daily as (
 
 ),
 
+incidents_daily as (
+
+    select
+        summary_date,
+        sum(opened) as incidents_opened,
+        sum(resolved) as incidents_resolved,
+        avg(time_to_resolve_seconds) as avg_time_to_resolve_seconds
+
+    from incident_days
+    group by 1
+
+),
+
 final as (
 
     select
-        coalesce(pd.summary_date, td.summary_date, od.summary_date) as summary_date,
+        coalesce(pd.summary_date, td.summary_date, od.summary_date, inc.summary_date) as summary_date,
 
         -- pipeline metrics
         coalesce(pd.pipeline_runs, 0) as pipeline_runs,
@@ -179,6 +222,11 @@ final as (
         od.avg_operation_duration_seconds,
         coalesce(od.total_operation_duration_seconds, 0) as total_operation_duration_seconds,
 
+        -- incident metrics
+        coalesce(inc.incidents_opened, 0) as incidents_opened,
+        coalesce(inc.incidents_resolved, 0) as incidents_resolved,
+        inc.avg_time_to_resolve_seconds,
+
         -- computed fields
         case
             when coalesce(pd.pipeline_runs, 0) > 0
@@ -190,6 +238,8 @@ final as (
     from pipeline_daily as pd
     full outer join task_daily as td on pd.summary_date = td.summary_date
     full outer join operations_daily as od on coalesce(pd.summary_date, td.summary_date) = od.summary_date
+    full outer join incidents_daily as inc
+        on coalesce(pd.summary_date, td.summary_date, od.summary_date) = inc.summary_date
 
 )
 
